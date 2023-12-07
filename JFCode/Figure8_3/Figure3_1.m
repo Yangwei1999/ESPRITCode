@@ -64,7 +64,7 @@ plot(40*coeffList,(MUSIC_Time_coeff),'LineStyle','-','Color','#0072BD','Marker',
 plot(40*coeffList,(GMUSIC_Time_coeff),'LineStyle','-','Color','#0072BD','Marker','o','LineWidth',1.5)
 plot(40*coeffList,(ESPRIT_Time_coeff),'LineStyle','-','Color','#77AC30','Marker','x','LineWidth',1.5)
 plot(40*coeffList,(DESPRIT_Time_coeff),'LineStyle','-','Color','#77AC30','Marker','o','LineWidth',1.5)
-legend('MUSIC','GMUSIC','ESPRIT','DESPRIT')
+legend('MUSIC1','GMUSIC','ESPRIT','DESPRIT')
 xlabel('N')
 ylabel('Time(s)')
 title('$N/T = c $' , 'Interpreter','latex')
