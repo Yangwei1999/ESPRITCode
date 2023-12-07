@@ -1,0 +1,64 @@
+close all; clear; clc
+% 探究NT 同比增长时 CRB的特性
+coeffList = 1:1:5;
+theta_true = 0; 
+k = length(theta_true);
+SNR = 5;
+nb_Loop = 10;
+CRB_Experiment = zeros(nb_Loop,length(coeffList));
+CRB_Theory = zeros(1,length(coeffList));
+CRB = zeros(1,length(coeffList));
+for coeffList_i = 1 : length(coeffList)
+    coeff = coeffList(coeffList_i);
+    N = 40 * coeff;
+    T  = 80 * coeff;
+    c = N/T;
+    P = 1/ N;     
+    sigma2 = 10.^(-SNR/10);
+    clear i
+    a = @(theta) exp(1i*theta*(0:N-1)');  
+    diffa = @(theta) exp(1i*theta*(0:N-1)') *1i .*(0:N-1).' ;
+    A = [];
+    diffA = [];
+    for tmp_index=1:length(theta_true)
+        A = [A a(theta_true(tmp_index))];
+        diffA = [diffA diffa(theta_true(tmp_index))];
+    end
+    D = diffA; 
+    for jj = 1 : nb_Loop
+            disp(['SNR : '  num2str(coeffList_i) ',' 'nb Loop : '  num2str(jj)])
+            S = sqrtm(P)*sqrt(1/2) *(randn(k,T) + 1i *randn(k,T));
+            CRB_Sum = zeros(k,k);
+            for T_i = 1: T
+                Xt = diag(S(:,T_i));
+                CRB_Sum = CRB_Sum + real(Xt' * D' *(eye(N) - A*inv(A'*A)*A')*D*Xt);
+            end
+            CRB_Sum = sigma2 *inv(CRB_Sum) /2;
+            CRB_Experiment(jj,coeffList_i) = CRB_Sum;
+    end
+
+    CRB_Theory(1,coeffList_i) =  6 /(N^3 * T) * inv(P) * sigma2;   % N^3 下降
+end
+figure;
+hold on;
+CRB_Experiment_E = mean(CRB_Experiment,1);
+plot(40  * coeffList,log10(CRB_Experiment_E),'LineStyle','-','Color','#4DBEEE','Marker','o','LineWidth',1.5)
+plot(40  * coeffList,log10(CRB_Theory)      ,'LineStyle','-','Color','#4DBEEE','Marker','x','LineWidth',1.5)
+title('$N/T = 0.5$,$SNR = 5$','Interpreter','latex');
+xlabel('N');
+ylabel('CRB');
+legend('CRB\_numerical','CRB\_theoretical')
+
+
+
+figure;
+hold on;
+CRB_Experiment_Var = var(CRB_Experiment,0,1);
+plot(40  * coeffList,log10(CRB_Experiment_Var),'LineStyle','-','Color','#4DBEEE','Marker','o','LineWidth',1.5)
+% plot(40  * coeffList,log10(CRB_Theory)      ,'LineStyle','-','Color','#4DBEEE','Marker','x','LineWidth',1.5)
+title('$N/T = 0.5$,$SNR = 5$','Interpreter','latex');
+xlabel('N');
+ylabel('CRB\_var');
+legend('CRB\_numerical\_var')
+
+
