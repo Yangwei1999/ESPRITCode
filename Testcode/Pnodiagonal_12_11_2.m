@@ -4,7 +4,7 @@ clear; clc
 
 coeff =20;
 nb_Loop =100;
-P = [1,0.4;0.4,1];
+P = [1,0;0,1];
 SNR =2;
 sigma2 = 10.^(-SNR/10);
 
