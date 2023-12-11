@@ -6,7 +6,7 @@ Pnodiagonal 为探究非对角时，特征值的极限，Figure1 为结果，随
 
 ## 2023-12-11 探究只修复对角线元素后特征值的极限（并与上述情况比较）
 <!-- ![12312](./Figure1/SNR_2.jpg) -->
-<figure>
+<!-- <figure>
 <img src = './Figure1/SNR_2.jpg' width=130>
 <img src = './Figure1/SNR_4.jpg' width=130>
 <img src = './Figure1/SNR_6.jpg' width=130>
@@ -15,17 +15,22 @@ Pnodiagonal 为探究非对角时，特征值的极限，Figure1 为结果，随
 <img src = './Figure1/SNR_2-coeff.jpg' width=130>
 <img src = './Figure1/SNR_4-coeff.jpg' width=130>
 <img src = './Figure1/SNR_6_coeff.jpg' width=130>
-</figure>
+</figure> -->
 
-<table>
+<table >
+    <tr>
+        <th> SNR = 2</th>
+        <th> SNR = 4</th>
+        <th> SNR = 6</th>
+    </tr>
     <tr>
         <td ><center><img src="./Figure1/SNR_2.jpg" > </center></td>
         <td ><center><img src="./Figure1/SNR_4.jpg" > </center></td>
         <td ><center><img src="./Figure1/SNR_6.jpg" > </center></td>
     <tr>
         <tr>
-        <td ><center><img src="./Figure1/SNR_2-coeff.jpg" >SNR = 2 </center></td>
-        <td ><center><img src="./Figure1/SNR_4-coeff.jpg" >SNR = 4 </center></td>
-        <td ><center><img src="./Figure1/SNR_6_coeff.jpg" >SNR = 6 </center></td>
+        <td ><center><img src="./Figure1/SNR_2-coeff.jpg" > </center></td>
+        <td ><center><img src="./Figure1/SNR_4-coeff.jpg" > </center></td>
+        <td ><center><img src="./Figure1/SNR_6_coeff.jpg" > </center></td>
     <tr>
 </table>
