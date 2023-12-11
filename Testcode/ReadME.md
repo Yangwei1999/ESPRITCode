@@ -31,13 +31,13 @@ Pnodiagonal_12_11.m
 change
 1. 验证$\lambda_i \rightarrow \overline{\lambda}_i$  
     1.1 Setting :   $P = \begin{pmatrix}1 & 0 \\ 0 & 1 \end{pmatrix}$,SNR = 2dB,$N = 800,T = 1600$  
-    ![大苏打撒旦](./Figure2/1.1.bmp)   
+    ![大苏打撒旦](Figure2/1.1.bmp)   
     1.2 Setting :   $P = \begin{pmatrix}1 & 0.4 \\ 0.4 & 1 \end{pmatrix}$,SNR = 2dB,$N = 800,T = 1600$  
-    ![大苏打撒旦](./Figure2/1_2_2.jpg)  
+    ![大苏打撒旦](Figure2/1_2_2.jpg)  
     1.3 Setting :   $P = \begin{pmatrix}1 & 0.4 \\ 0.4 & 1 \end{pmatrix}$,SNR = 3dB,$N = 800,T = 1600$  
-    ![大苏打撒旦](./Figure2/1_2_2.bmp)  
+    ![大苏打撒旦](Figure2/1_2_2.bmp)  
     1.4 Setting :   $P = \begin{pmatrix}1 & 0.4 \\ 0.4 & 1 \end{pmatrix}$,SNR = 4dB,$N = 800,T = 1600$  
-    ![大苏打撒旦](./Figure2/1_2_3.bmp)  
+    ![大苏打撒旦](Figure2/1_2_3.bmp)  
 
 
 
