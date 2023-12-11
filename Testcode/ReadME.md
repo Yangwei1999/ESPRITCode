@@ -25,12 +25,7 @@ Pnodiagonal 为探究非对角时，特征值的极限，Figure1 为结果，随
 
 ## 2023-12-11 探究只修复对角线元素后特征值的极限（并与上述情况比较）
 error Pnodiagonal_12_11.m
-<style>
-img{
-    width: 50%;
-    padding-left: 20%;
-}
-</style>
+
 ## 探究特征值的极限是否收敛于给定角度，重复实验100次
 Pnodiagonal_12_11.m	
 change
