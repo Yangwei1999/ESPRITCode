@@ -5,6 +5,7 @@ clear; clc
 coeff =5;
 nb_Loop =100;
 P = [1,0;0,1];
+% P = [1,0.4;0.4,1];
 SNR =2;
 sigma2 = 10.^(-SNR/10);
 N = 40* coeff ;
@@ -108,7 +109,7 @@ for jj = 1 : nb_Loop
     Test_1(jj) = u1_hat' * J1' *J2 * u1_hat * u2_hat' * J1' *J2 * u2_hat;
 %     u1' * J1' *J2 * u1 * u2' * J1' *J2 * u2 *g1 * g2
 %     
-    Test_2(jj) = u1_hat' * J1' *J2 * u2_hat * u2_hat' * J1' *J2 * u1_hat
+    Test_2(jj) = u1_hat' * J1' *J2 * u2_hat * u2_hat' * J1' *J2 * u1_hat;
 %     u1' * J1' *J2 * u2 * u2' * J1' *J2 * u1 *g1 * g2
 % %     
 %     u1_hat' * J1' *J2 * u1_hat * u2_hat' * J1' *J2 * u2_hat - u1_hat' * J1' *J2 * u2_hat * u2_hat' * J1' *J2 * u1_hat
@@ -132,6 +133,8 @@ end
 % % 
 Phi1_Res_E = squeeze(mean(Phi1_Res,1)) 
 Phi2_Res_E = squeeze(mean(Phi2_Res,1))
+
+
 trace(Phi2_Res_E)
 det(Phi2_Res_E)
 
@@ -140,6 +143,7 @@ Det_Res_E  = mean(Det_Res)
 
 Det_Res_R_E = mean(Det_Res_R)
 Tr_Res_R_E  = mean(Tr_Res_R)
+
 Test_1_E    =mean(Test_1)
 Test_2_E    =mean(Test_2)
 
@@ -155,12 +159,12 @@ Test_2_E    =mean(Test_2)
 % trace(Phi2_Res_E)
 % det(Phi2_Res_E)
 
-n/N*(exp(1i*theta_true(1)) + exp(1i*theta_true(2)))
-n/N*exp(1i*theta_true(1)) *n/N*exp(1i*theta_true(2))
-
-n/N*(g1*exp(1i*theta_true(1))+g2*exp(1i*theta_true(2)))
-g1*n/N*exp(1i*theta_true(1)) *g2*n/N*exp(1i*theta_true(2))
+% n/N*(exp(1i*theta_true(1)) + exp(1i*theta_true(2)))
+% n/N*exp(1i*theta_true(1)) *n/N*exp(1i*theta_true(2))
 % 
+% n/N*(g1*exp(1i*theta_true(1))+g2*exp(1i*theta_true(2)))
+% g1*n/N*exp(1i*theta_true(1)) *g2*n/N*exp(1i*theta_true(2))
+% % 
 % 
 % % q = squeeze(mean(Phi2_Res,1))
 % % 

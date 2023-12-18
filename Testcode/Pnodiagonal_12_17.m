@@ -4,8 +4,8 @@ clear; clc
 
 coeff =5;
 nb_Loop =100;
-% P = [1,0;0,1];
-P = [1,0.4;0.4,1];
+P = [1,0;0,1];
+% P = [1,0.4;0.4,1];
 SNR =2;
 sigma2 = 10.^(-SNR/10);
 N = 40* coeff ;
@@ -133,6 +133,8 @@ end
 % % 
 Phi1_Res_E = squeeze(mean(Phi1_Res,1)) 
 Phi2_Res_E = squeeze(mean(Phi2_Res,1))
+
+
 trace(Phi2_Res_E)
 det(Phi2_Res_E)
 
@@ -168,8 +170,8 @@ Test_2_E    =mean(Test_2)
 % % 
 % % angle(eig(Phi2_Res_E))
 % % 
-% EigenValue_Result_E = mean(EigenValue_Result,2)
-% angle((EigenValue_Result_E))
+EigenValue_Result_E = mean(EigenValue_Result,2)
+angle((EigenValue_Result_E))
 % g1*n/N*exp(1i*theta_true(1))
 % g2*n/N*exp(1i*theta_true(2))
 % % EigPhi2 = eig(inv(Phi1_Res_E)*Phi2_Res_E)
@@ -180,15 +182,15 @@ Test_2_E    =mean(Test_2)
 % g1*(n/N) * exp(1i*theta_true(2))   % 好像是旋转的缘故 多了一个指数系数
 
 
-% figure;
-% hold on ;
-% 
-% quiver(0,0,real(g1*(n/N)*exp(1i*theta_true(1))),imag(g1*(n/N)*exp(1i*theta_true(1))),0,'LineWidth',1,'Color','#0072BD','LineStyle','--');
-% quiver(0,0,real(g1*(n/N)*exp(1i*theta_true(2))),imag(g1*(n/N)*exp(1i*theta_true(2))),0,'LineWidth',1,'Color','#0072BD','LineStyle','--');
-% 
-% quiver(0,0,real(EigenValue_Result_E(1)),imag(EigenValue_Result_E(1)),0,'LineWidth',1,'Color',	'#D95319','LineStyle','-');
-% quiver(0,0,real(EigenValue_Result_E(2)),imag(EigenValue_Result_E(2)),0,'LineWidth',1,'Color',	'#D95319','LineStyle','-');
-% % 特征值的渐进值(传统ESPRIT)
+figure;
+hold on ;
+
+quiver(0,0,real(g1*(n/N)*exp(1i*theta_true(1))),imag(g1*(n/N)*exp(1i*theta_true(1))),0,'LineWidth',1,'Color','#0072BD','LineStyle','--');
+quiver(0,0,real(g1*(n/N)*exp(1i*theta_true(2))),imag(g1*(n/N)*exp(1i*theta_true(2))),0,'LineWidth',1,'Color','#0072BD','LineStyle','--');
+
+quiver(0,0,real(EigenValue_Result_E(1)),imag(EigenValue_Result_E(1)),0,'LineWidth',1,'Color',	'#D95319','LineStyle','-');
+quiver(0,0,real(EigenValue_Result_E(2)),imag(EigenValue_Result_E(2)),0,'LineWidth',1,'Color',	'#D95319','LineStyle','-');
+% 特征值的渐进值(传统ESPRIT)
 % 
 % [U_APA,eigs_APA] = eig((A*sqrtm(P))*(A*sqrtm(P))','vector');
 % [eigs_APA, index] = sort(eigs_APA,'descend');
