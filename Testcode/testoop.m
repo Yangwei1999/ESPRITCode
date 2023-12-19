@@ -1,10 +1,10 @@
 
 clear ;
 clc;
-coeff =5;
+coeff =4;
 N = 40 * coeff;
 T = 80 * coeff;
-theta_true = [0*2*pi/N,0.4*2*pi/N];
+theta_true = [0*2*pi/N,5*2*pi/N];
 P = [1 0.4 ; 0.4 1];
 
 ArrayObject = [];

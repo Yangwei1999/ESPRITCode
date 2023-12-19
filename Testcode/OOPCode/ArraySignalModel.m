@@ -17,6 +17,8 @@ classdef ArraySignalModel < handle
         EigsHat      %  Emperical eigenvalues
         UsTrue       %  Gorund Signal Space
         EigsTrue     %  Gorund Signal eigenvalus
+%         GridGap    
+%         Gridinterval
         
     end
 
@@ -52,6 +54,11 @@ classdef ArraySignalModel < handle
 
             sigma2 = 10.^(-SNR/10);
             obj.sigma2 =sigma2;
+
+%             obj.GridGap = GridGap;
+% 
+%             intervalabs = pi/4;
+%             obj.Gridinterval = [-intervalabs,+intervalabs];
 
             % GenerateGuass(obj);
 
@@ -131,6 +138,54 @@ classdef ArraySignalModel < handle
                 DoA = sort(angle(EigenValues)).';
                 MSE = sum((DoA - obj.ThetaTrue).^2) / obj.k;
                 Bias =  sum(abs(DoA - obj.ThetaTrue))  / obj.k;
+        end
+
+        
+        function [DoA,MSE,Bias] = GetMusic(obj,GridInterval,GridGap)
+            % MUSIC可以和GMUSIC同时计算
+            w_theta = linspace(GridInterval(1),GridInterval(2),GridGap);
+            a = @(theta) exp(1i*theta*(0:obj.N-1)')/sqrt(obj.N);
+            store_output = zeros(length(w_theta),1);
+            for j = 1:length(w_theta)
+                w_theta_i = w_theta(j);
+                %MUSIC
+                store_output(j) = (real(a(w_theta_i)'*obj.UsHat*(obj.UsHat')*a(w_theta_i)));
+            end
+            [pks,locs] = findpeaks(store_output);
+            [~, index] = sort(pks,'descend');
+            locs = locs(index);
+            locs = locs(1:obj.k);
+            DoA = sort(w_theta(locs),'ascend');
+            MSE = sum((DoA - obj.ThetaTrue).^2) / obj.k;
+            Bias =  sum(abs(DoA - obj.ThetaTrue))  / obj.k;
+        end
+
+        function [DoA,MSE,Bias] = GetGMusic(obj,GridInterval,GridGap)
+            % MUSIC可以和GMUSIC同时计算
+            w_theta = linspace(GridInterval(1),GridInterval(2),GridGap);
+            a = @(theta) exp(1i*theta*(0:obj.N-1)')/sqrt(obj.N);
+            store_output = zeros(length(w_theta),1);
+            for j = 1:length(w_theta)
+                %GMUSIC 方法
+                theta = w_theta(j);
+                sigma2_estim = mean(obj.EigsHat(obj.k+1:end));
+                DGMUSIC = zeros(obj.k,obj.k);
+                for l = 1:obj.k
+                    lambda = obj.EigsHat(l)/sigma2_estim;
+                    if lambda>=(1+sqrt(obj.c))^2
+                        ell_estim = (lambda-(1+obj.c))/2 + sqrt( (lambda-(1+obj.c))^2 - 4*obj.c)/2;
+                        DGMUSIC(l,l) = (ell_estim^2+obj.c*ell_estim)/(ell_estim^2-obj.c);
+                    end
+                end
+                store_output(j,1) = (real(( a(theta)'*obj.UsHat*DGMUSIC*(obj.UsHat')*a(theta))));
+            end
+            [pks,locs] = findpeaks(store_output);
+            [~, index] = sort(pks,'descend');
+            locs = locs(index);
+            locs = locs(1:obj.k);
+            DoA = sort(w_theta(locs),'ascend');
+            MSE = sum((DoA - obj.ThetaTrue).^2) / obj.k;
+            Bias =  sum(abs(DoA - obj.ThetaTrue))  / obj.k;
         end
 
         function GenerateGuass(obj)
