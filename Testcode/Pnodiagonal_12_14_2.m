@@ -1,14 +1,14 @@
 clear; clc
 
 %% 探究二阶矩阵 P非对角
-% ESPRIT算法GESPRIT算法的MSE 比较 随着SNR
+% ESPRIT算法GESPRIT算法的MSE 比较 随着SNR  %% 估计噪声功率
 
 coeff =5;
 nb_Loop =100;
 P = [1,0.4;0.4,1];
 
 % SNR =2;
-SNRList = 0:1:14;
+SNRList =0:14;
 % SNRList = 2;
 % sigma2 = 10.^(-SNR/10);
 N = 40* coeff ;
@@ -49,6 +49,21 @@ for SNR_i = 1: length(SNRList)
         [eigs_SCM, index] = sort(eigs_SCM,'descend');
         U = U(:, index);
         U_S = U(:,1:k);
+
+        % 估計---
+%         sigma2_estim = eigs_SCM(k+1)/(1+sqrt(c))^2
+        sigma2_estim = mean(eigs_SCM(k+1:end));
+%         sigma2_estim = sigma2;
+        ell_estim = zeros(1,k);
+        for l = 1:k
+            lambda = eigs_SCM(l)/sigma2_estim;
+            if lambda>=(1+sqrt(c))^2
+                ell_estim(l) = (lambda-(1+c))/2 + sqrt( (lambda-(1+c))^2 - 4*c)/2;
+%                 D(l,l) = (ell_estim^2+c*ell_estim)/(ell_estim^2-c);
+            end
+        end
+
+
         J_tmp = eye(N);
         n = N-1;
         J1 = J_tmp(1:n,:);
@@ -61,22 +76,40 @@ for SNR_i = 1: length(SNRList)
         [~,eigs_Phi] = eig(Phi,'vector');
         [~, index] = sort(angle(eigs_Phi),'ascend');
         eigs_Phi = eigs_Phi(index);
-        EigenValue_Result(:,jj) = eigs_Phi;
+%         EigenValue_Result(:,jj) = eigs_Phi;
         ESPRIT_DoA = angle(eigs_Phi);
         ESPRIT_DoA = sort(ESPRIT_DoA).';
         ESPRIT_MSE(jj,SNR_i) = norm(ESPRIT_DoA - theta_true).^2 / k;
 
 
         % 修正参数 （ESPRIT-Modified）
-        g1 = (1- c * (eigs_P(1)/sigma2)^(-2))/(1 + c * (eigs_P(1)/sigma2)^(-1));
-        g2 = (1- c * (eigs_P(2)/sigma2)^(-2))/(1 + c * (eigs_P(2)/sigma2)^(-1));
+%         g1 = (1- c * (eigs_P(1)/sigma2)^(-2))/(1 + c * (eigs_P(1)/sigma2)^(-1));
+%         g2 = (1- c * (eigs_P(2)/sigma2)^(-2))/(1 + c * (eigs_P(2)/sigma2)^(-1));
+
+%         g1 = (1- c * (ell_estim(1))^(-2))/(1 + c * (ell_estim(1))^(-1))
+%         g2 = (1- c * (ell_estim(2))^(-2))/(1 + c * (ell_estim(2))^(-1))
+
+        g1 = ((ell_estim(1))^(2) - c)/((ell_estim(1))^(2) + c*(ell_estim(1))^(1));
+        g2 = ((ell_estim(2))^(2) - c)/((ell_estim(2))^(2) + c*(ell_estim(2))^(1));
+% 
+%         if(isinf(g2))
+%             g2 = 1 ;
+%         end
+% 
+% 
+%         if(isinf(g1))
+%             g1 = 1 ;
+%         end
+
         Pra1 = [1/g1 1/sqrt(g1*g2);1/sqrt(g1*g2) 1/g2 ];
+%         mask1 = isinf(Pra1);
+%         Pra1
         Phi2_test = Phi2 .* Pra1; 
         Phi =  inv(Phi1)*Phi2_test;
         [U,eigs_Phi] = eig(Phi,'vector');
         [~, index] = sort(angle(eigs_Phi),'ascend');
         eigs_Phi = eigs_Phi(index);
-        EigenValue_Result2(:,jj) = eigs_Phi;
+%         EigenValue_Result2(:,jj) = eigs_Phi;
         GESPRIT_DoA = angle(eigs_Phi);
         GESPRIT_DoA = sort(GESPRIT_DoA).';
         GESPRIT_MSE(jj,SNR_i) = norm(GESPRIT_DoA - theta_true).^2 / k;
@@ -95,9 +128,11 @@ plot(SNRList,log10(GESPRIT_MSE_E),'LineStyle','-','Color','#0072BD','Marker','o'
 % xline(2)
 legend('threshold','ESPRIT','GESPRIT')
 % 特征值的渐进值(传统ESPRIT)
-
+% 
 % [U_APA,eigs_APA] = eig((A*sqrtm(P))*(A*sqrtm(P))','vector');
 % [eigs_APA, index] = sort(eigs_APA,'descend');
+% 
+% eigs_P = eigs_APA(1:k)
 % U_APA = U_APA(:, index);
 % [U_P,eigs_P] = eig(P,'vector');
 % [eigs_P, index] = sort(eigs_P,'descend');

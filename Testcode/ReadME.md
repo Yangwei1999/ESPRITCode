@@ -98,9 +98,15 @@ Pnodiagonal_12_14.m
 
 
 
+## 2023-12-18
+[重根下](Pnodiagonal_12_18.m)
+***重根下ESPRIT方法的***
 
 
 
 
+## 2023-12-18-2 
+[](Pnodiagonal_12_18_2.m) 直接修复
 
 
+修复Phi1

@@ -6,12 +6,12 @@ clear; clc
 coeff =10;
 nb_Loop =100;
 P = [1,0;0,1];
-SNR =2;
+SNR =5;
 sigma2 = 10.^(-SNR/10);
 N = 40* coeff ;
 T  = 80* coeff;
 c = N/T;
-theta_true = [0,pi/3];
+theta_true = [0,2*pi/N * 0.4];
 k = length(theta_true);
 clear i
 a = @(theta) exp(1i*theta*(0:N-1)')/sqrt(N);
@@ -24,12 +24,12 @@ EigenValue_Result = complex(zeros(k,nb_Loop),zeros(k,nb_Loop));
 EigenValue_Result2 = complex(zeros(k,nb_Loop),zeros(k,nb_Loop));
 
 % 求解g1 g2
-[U_P,eigs_P] = eig(P,'vector');
-[eigs_P, index] = sort(eigs_P,'descend');
-B = U_P(:, index);
-eigs_P = eigs_P(1:k);
-g1 = (1- c * (eigs_P(1)/sigma2)^(-2))/(1 + c * (eigs_P(1)/sigma2)^(-1));
-g2 = (1- c * (eigs_P(2)/sigma2)^(-2))/(1 + c * (eigs_P(2)/sigma2)^(-1));
+[~,eigs_APA] = eig((A*sqrtm(P))*(A*sqrtm(P))','vector');
+[eigs_APA, index] = sort(eigs_APA,'descend');
+% U_APA = U_APA(:, index);
+eigs_APA = eigs_APA(1:k);
+g1 = (1- c * (eigs_APA(1)/sigma2)^(-2))/(1 + c * (eigs_APA(1)/sigma2)^(-1));
+g2 = (1- c * (eigs_APA(2)/sigma2)^(-2))/(1 + c * (eigs_APA(2)/sigma2)^(-1));
 
 for jj = 1 : nb_Loop
     jj
@@ -67,13 +67,13 @@ end
 
 % 特征值的渐进值(传统ESPRIT)
 
-[U_APA,eigs_APA] = eig((A*sqrtm(P))*(A*sqrtm(P))','vector');
-[eigs_APA, index] = sort(eigs_APA,'descend');
+[U_APA,~] = eig((A*sqrtm(P))*(A*sqrtm(P))','vector');
+% [eigs_APA, index] = sort(eigs_APA,'descend');
 U_APA = U_APA(:, index);
-[U_P,eigs_P] = eig(P,'vector');
-[eigs_P, index] = sort(eigs_P,'descend');
-B = U_P(:, index);
-eigs_P = eigs_P(1:k)
+% [U_P,eigs_P] = eig(P,'vector');
+% [eigs_P, index] = sort(eigs_P,'descend');
+% B = U_P(:, index);
+% eigs_P = eigs_P(1:k)
 
 u1 = U_APA(:,1);
 u2 = U_APA(:,2);
@@ -82,7 +82,6 @@ Alpha2 = g1  *  g2 *(n/N).^2 * exp(1i * theta_true(1)) * exp(1i * theta_true(2))
 Delta = Alpha1^2 - 4 * Alpha2;
 lameda1_limit = (Alpha1 + sqrt(Delta))/2;
 lameda2_limit = (Alpha1 - sqrt(Delta))/2;
-
 
 % 特征值的渐进值(ESPRIT-modified)
 lameda1_modify_limit = (n/N) * exp(1i * theta_true(1));
@@ -94,31 +93,28 @@ EigenValue_E = mean(EigenValue_Result,2).';
 % ESPRIT-modified 的emprical eigenvalue E
 EigenValue_E2 = mean(EigenValue_Result2,2).';
 
-
-
-
-
 figure;
 hold on ;
 
-quiver(0,0,real(lameda1_limit),imag(lameda1_limit),0,'LineWidth',1,'Color','#0072BD','LineStyle','--');
-quiver(0,0,real(lameda2_limit),imag(lameda2_limit),0,'LineWidth',1,'Color','#0072BD','LineStyle','--');
+% quiver(0,0,real(lameda1_limit),imag(lameda1_limit),0,'LineWidth',1,'Color','#0072BD','LineStyle','--');
+% quiver(0,0,real(lameda2_limit),imag(lameda2_limit),0,'LineWidth',1,'Color','#0072BD','LineStyle','--');
 
 quiver(0,0,real(EigenValue_E(1)),imag(EigenValue_E(1)),0,'LineWidth',1,'Color',	'#D95319','LineStyle','-');
 quiver(0,0,real(EigenValue_E(2)),imag(EigenValue_E(2)),0,'LineWidth',1,'Color',	'#D95319','LineStyle','-');
 
-quiver(0,0,real(EigenValue_E2(1)),imag(EigenValue_E2(1)),0,'LineWidth',1,'Color','#EDB120','LineStyle','-');
-quiver(0,0,real(EigenValue_E2(2)),imag(EigenValue_E2(2)),0,'LineWidth',1,'Color','#EDB120','LineStyle','-');
 
 quiver(0,0,real(lameda1_modify_limit),imag(lameda1_modify_limit),0,'LineWidth',1,'Color',	'#77AC30','LineStyle','--');
 quiver(0,0,real(lameda2_modify_limit),imag(lameda2_modify_limit),0,'LineWidth',1,'Color',	'#77AC30','LineStyle','--');
-axis equal
-legend('$\overline{\lambda}_{1}$(theory-ESPRIT)','$\overline{\lambda}_{2}$(theory-ESPRIT)',...
-    '$\overline{\lambda}_{1}$(Empirical-ESPRIT)','$\overline{\lambda}_{2}$(Empirical-ESPRIT)',...
-    '$\overline{\lambda}_{1}$(theory-GESPRIT)','$\overline{\lambda}_{2}$(theory-GESPRIT)',...
-    '$\overline{\lambda}_{1}$(Empirical-GESPRIT)','$\overline{\lambda}_{2}$(Empirical-GESPRIT)',...
-    'interpreter','latex');
 
+% quiver(0,0,real(EigenValue_E2(1)),imag(EigenValue_E2(1)),0,'LineWidth',1,'Color','#EDB120','LineStyle','-');
+% quiver(0,0,real(EigenValue_E2(2)),imag(EigenValue_E2(2)),0,'LineWidth',1,'Color','#EDB120','LineStyle','-');
+axis equal
+% legend('$\overline{\lambda}_{1}$(theory-ESPRIT)','$\overline{\lambda}_{2}$(theory-ESPRIT)',...
+%     '$\overline{\lambda}_{1}$(Empirical-ESPRIT)','$\overline{\lambda}_{2}$(Empirical-ESPRIT)',...
+%     '$\overline{\lambda}_{1}$(theory-GESPRIT)','$\overline{\lambda}_{2}$(theory-GESPRIT)',...
+%     '$\overline{\lambda}_{1}$(Empirical-GESPRIT)','$\overline{\lambda}_{2}$(Empirical-GESPRIT)',...
+%     'interpreter','latex');
+% 
 
 
 
