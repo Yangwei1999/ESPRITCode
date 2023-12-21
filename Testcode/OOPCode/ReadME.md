@@ -2,7 +2,7 @@
 # 2023-12-19
 
 **实验1** ：在不相关widely spaced DoA 情况下，ESPRIT GESPRIT MUSIC GMUSIC CRB 的曲线($N = 80,T =160$  SNR $=0$)
-![123](./Figure/1.jpg)  
+[![123](./Figure/1.jpg)  ](https://github.com/Yangwei1999/ESPRITCode/tree/DebugTest/Testcode/OOPCode/Figure/2.jpg)
 此时GESPRI\ ESPRIT一致 MUSIC 和GMUSIC仍然保持一致
 
 ---
