@@ -28,9 +28,9 @@ for object_i = 1:length(ArrayObject)
         disp([num2str(object_i) '--' num2str(Loop_i)])
         ObjectNow.GenerateGuass();
         [~,ESPRIT_MSE_Res(Loop_i,object_i),~]  = ObjectNow.GetESPRIT();
-        [~,GESPRIT_MSE_Res(Loop_i,object_i),~]  = ObjectNow.GetGESPRIT('Empirical-1');
-        [~,MUSIC_MSE_Res(Loop_i,object_i),~]  = ObjectNow.GetMusic(ScanArea,ScanPrec);
-        [~,GMUSIC_MSE_Res(Loop_i,object_i),~]  = ObjectNow.GetGMusic(ScanArea,ScanPrec);
+        [~,GESPRIT_MSE_Res(Loop_i,object_i),~]  = ObjectNow.GetGESPRIT('Empirical-1');index1
+%         [~,MUSIC_MSE_Res(Loop_i,object_i),~]  = ObjectNow.GetMusic(ScanArea,ScanPrec);
+%         [~,GMUSIC_MSE_Res(Loop_i,object_i),~]  = ObjectNow.GetGMusic(ScanArea,ScanPrec);
         % [~,GESPRIT2_MSE_Res(Loop_i,object_i),~]  = ObjectNow.GetGESPRIT('Empirical-2');
     end
     CRB_Res(1,object_i) = trace(ObjectNow.GetCRB())/ObjectNow.k;
@@ -48,8 +48,8 @@ hold on ;
 xline(2,'LineWidth',1,'LineStyle','--');  % condition
 plot(SNRList,log10(ESPRIT_MSE_E),'LineStyle','-','Color',	'#77AC30','Marker','x','LineWidth',1.5)
 plot(SNRList,log10(GESPRIT_MSE_E),'LineStyle','-','Color','#77AC30','Marker','o','LineWidth',1.5)
-plot(SNRList,log10(MUSIC_MSE_E),'LineStyle','-','Color','#0072BD','Marker','x','LineWidth',1.5)
-plot(SNRList,log10(GMUSIC_MSE_E),'LineStyle','-','Color','#0072BD','Marker','o','LineWidth',1.5)
+% plot(SNRList,log10(MUSIC_MSE_E),'LineStyle','-','Color','#0072BD','Marker','x','LineWidth',1.5)
+% plot(SNRList,log10(GMUSIC_MSE_E),'LineStyle','-','Color','#0072BD','Marker','o','LineWidth',1.5)
 plot(SNRList,log10(CRB_Res_E),'LineStyle','--','Color','#4DBEEE','LineWidth',1.5)
-legend('threshold','ESPRIT','DESPRIT','MUSIC','GMUSIC','CRB');
-% legend('threshold','ESPRIT','GESPRIT','CRB')
+% legend('threshold','ESPRIT','DESPRIT','MUSIC','GMUSIC','CRB');
+legend('threshold','ESPRIT','GESPRIT','CRB')

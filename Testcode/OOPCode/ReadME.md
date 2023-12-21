@@ -26,6 +26,21 @@
 
 ![123](Figure/3_2.jpg)
 ---
+**实验4** ：ESPRIT方法与子阵列的取值数量的关系 考虑在不同的子阵列下  
+貌似阵列取少后会出现 在pi/ pi 相位模糊的情况
+
+---
+
+**实验5** ：
+在相关closely spaced DoA 相关信号情况下，ESPRIT GESPRIT MUSIC GMUSIC CRB 的曲线($N = 80,T =160$ Speration condition SNR $=0$)
+![123](Figure/5.jpg)  
+在相关closely spaced DoA 不相关信号情况下，ESPRIT GESPRIT MUSIC GMUSIC CRB 的曲线($N = 80,T =160$ Speration condition SNR $=0$)
+![123](Figure/5_2.jpg)
+
+
+---
+
+
 
 **Quesitons**
 * Q1 : 重复多次取平均的目的是为了获得确定性等价，因为没法获得NT -> 无穷

@@ -73,18 +73,36 @@ classdef ArraySignalModel < handle
 
         end
 
-        function [DoA,MSE,Bias,EigenValues] = GetESPRIT(obj)
+        function [DoA,MSE,Bias,EigenValues] = GetESPRITsub(obj,index1,index2,Bias)
             %% Origin esprit methods
                 J_tmp = eye(obj.N);
-                n = obj.N-1;
-                J1 = J_tmp(1:n,:);
-                J2 = J_tmp(2:end,:);
+                n =  index2 - index1;
+                J1 = J_tmp(index1:index2,:);
+                J2 = J_tmp(index1+Bias:index2+Bias,:);
                 Phi1 = obj.UsHat' * (J1' * J1) * obj.UsHat;
                 Phi2 = obj.UsHat' * (J1' * J2) * obj.UsHat;
                 Phi =  inv(Phi1)* Phi2;
                 [~,EigenValues] = eig(Phi,'vector');
                 [DoA,index] = sort(angle(EigenValues));
-                DoA = DoA.';
+                DoA = DoA.'/Bias  ;
+                EigenValues = EigenValues(index);
+                MSE = sum((DoA - obj.ThetaTrue).^2) / obj.k;
+                Bias =  sum(abs(DoA - obj.ThetaTrue))  / obj.k;
+        end
+
+        
+        function [DoA,MSE,Bias,EigenValues] = GetESPRIT(obj)
+            %% Origin esprit methods
+                J_tmp = eye(obj.N);
+                n =  obj.N-1;
+                J1 = J_tmp(1:n,:);
+                J2 = J_tmp(2:n+1,:);
+                Phi1 = obj.UsHat' * (J1' * J1) * obj.UsHat;
+                Phi2 = obj.UsHat' * (J1' * J2) * obj.UsHat;
+                Phi =  inv(Phi1)* Phi2;
+                [~,EigenValues] = eig(Phi,'vector');
+                [DoA,index] = sort(angle(EigenValues));
+                DoA = DoA.' ;
                 EigenValues = EigenValues(index);
                 MSE = sum((DoA - obj.ThetaTrue).^2) / obj.k;
                 Bias =  sum(abs(DoA - obj.ThetaTrue))  / obj.k;

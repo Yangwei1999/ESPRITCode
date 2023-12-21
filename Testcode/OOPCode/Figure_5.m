@@ -4,12 +4,12 @@ clc;
 coeff =2;
 N = 40 * coeff;
 T = 80 * coeff;
-theta_true = [0,5*2*pi/N];
-P = [1 0.4; 0.4 1];
+theta_true = [0,0.4*2*pi/N]; % closely spaced doar
+P = [1 0; 0 1];
 
 ArrayObject = [];
 
-SNRList = 2:15;
+SNRList = 15:34;
 ScanArea = [-pi/4 pi/4];
 ScanPrec = 5000;
 for ii = 1:length(SNRList)
@@ -29,8 +29,8 @@ for object_i = 1:length(ArrayObject)
         ObjectNow.GenerateGuass();
         [~,ESPRIT_MSE_Res(Loop_i,object_i),~]  = ObjectNow.GetESPRIT();
         [~,GESPRIT_MSE_Res(Loop_i,object_i),~]  = ObjectNow.GetGESPRIT('Empirical-1');
-%         [~,MUSIC_MSE_Res(Loop_i,object_i),~]  = ObjectNow.GetMusic(ScanArea,ScanPrec);
-%         [~,GMUSIC_MSE_Res(Loop_i,object_i),~]  = ObjectNow.GetGMusic(ScanArea,ScanPrec);
+        [~,MUSIC_MSE_Res(Loop_i,object_i),~]  = ObjectNow.GetMusic(ScanArea,ScanPrec);
+        [~,GMUSIC_MSE_Res(Loop_i,object_i),~]  = ObjectNow.GetGMusic(ScanArea,ScanPrec);
         % [~,GESPRIT2_MSE_Res(Loop_i,object_i),~]  = ObjectNow.GetGESPRIT('Empirical-2');
     end
     CRB_Res(1,object_i) = trace(ObjectNow.GetCRB())/ObjectNow.k;
@@ -45,11 +45,11 @@ CRB_Res_E     = CRB_Res;
 figure;
 hold on ;
 
-xline(2,'LineWidth',1,'LineStyle','--');  % condition
+% xline(9.2,'LineWidth',1,'LineStyle','--');  % condition
 plot(SNRList,log10(ESPRIT_MSE_E),'LineStyle','-','Color',	'#77AC30','Marker','x','LineWidth',1.5)
 plot(SNRList,log10(GESPRIT_MSE_E),'LineStyle','-','Color','#77AC30','Marker','o','LineWidth',1.5)
-% plot(SNRList,log10(MUSIC_MSE_E),'LineStyle','-','Color','#0072BD','Marker','x','LineWidth',1.5)
-% plot(SNRList,log10(GMUSIC_MSE_E),'LineStyle','-','Color','#0072BD','Marker','o','LineWidth',1.5)
+plot(SNRList,log10(MUSIC_MSE_E),'LineStyle','-','Color','#0072BD','Marker','x','LineWidth',1.5)
+plot(SNRList,log10(GMUSIC_MSE_E),'LineStyle','-','Color','#0072BD','Marker','o','LineWidth',1.5)
 plot(SNRList,log10(CRB_Res_E),'LineStyle','--','Color','#4DBEEE','LineWidth',1.5)
-% legend('threshold','ESPRIT','DESPRIT','MUSIC','GMUSIC','CRB');
-legend('threshold','ESPRIT','GESPRIT','CRB')
+legend('ESPRIT','DESPRIT','MUSIC','GMUSIC','CRB');
+% legend('threshold','ESPRIT','GESPRIT','CRB')
