@@ -73,7 +73,7 @@ classdef ArraySignalModel < handle
 
         end
 
-        function [DoA,MSE,Bias] = GetESPRIT(obj)
+        function [DoA,MSE,Bias,EigenValues] = GetESPRIT(obj)
             %% Origin esprit methods
                 J_tmp = eye(obj.N);
                 n = obj.N-1;
@@ -83,11 +83,13 @@ classdef ArraySignalModel < handle
                 Phi2 = obj.UsHat' * (J1' * J2) * obj.UsHat;
                 Phi =  inv(Phi1)* Phi2;
                 [~,EigenValues] = eig(Phi,'vector');
-                DoA = sort(angle(EigenValues)).';
+                [DoA,index] = sort(angle(EigenValues));
+                DoA = DoA.';
+                EigenValues = EigenValues(index);
                 MSE = sum((DoA - obj.ThetaTrue).^2) / obj.k;
                 Bias =  sum(abs(DoA - obj.ThetaTrue))  / obj.k;
         end
-        function [DoA,MSE,Bias] = GetGESPRIT(obj,type)
+        function [DoA,MSE,Bias,EigenValues] = GetGESPRIT(obj,type)
             %% Gereral esprit methods
 
                 switch type
@@ -135,7 +137,9 @@ classdef ArraySignalModel < handle
                 Phi2_Repair = Phi2.*G;
                 Phi =  inv(Phi1)* Phi2_Repair;
                 [~,EigenValues] = eig(Phi,'vector');
-                DoA = sort(angle(EigenValues)).';
+                [DoA,index] = sort(angle(EigenValues));
+                DoA = DoA.';
+                EigenValues = EigenValues(index);
                 MSE = sum((DoA - obj.ThetaTrue).^2) / obj.k;
                 Bias =  sum(abs(DoA - obj.ThetaTrue))  / obj.k;
         end
@@ -208,6 +212,10 @@ classdef ArraySignalModel < handle
 
         function CRB = GetCRB(obj)
             CRB = obj.sigma2 / (2*obj.T) *inv(real(obj.D'*(eye(obj.N)-obj.A*inv(obj.A'*obj.A)*obj.A')*obj.D) .*eye(obj.k));
+            
+        end
+        function CRB = GetEigenvalue(obj)
+            % CRB = obj.sigma2 / (2*obj.T) *inv(real(obj.D'*(eye(obj.N)-obj.A*inv(obj.A'*obj.A)*obj.A')*obj.D) .*eye(obj.k));
             
         end
 

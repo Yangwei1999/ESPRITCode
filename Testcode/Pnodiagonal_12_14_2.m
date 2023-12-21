@@ -52,16 +52,16 @@ for SNR_i = 1: length(SNRList)
 
         % 估計---
 %         sigma2_estim = eigs_SCM(k+1)/(1+sqrt(c))^2
-        sigma2_estim = mean(eigs_SCM(k+1:end));
-%         sigma2_estim = sigma2;
-        ell_estim = zeros(1,k);
-        for l = 1:k
-            lambda = eigs_SCM(l)/sigma2_estim;
-            if lambda>=(1+sqrt(c))^2
-                ell_estim(l) = (lambda-(1+c))/2 + sqrt( (lambda-(1+c))^2 - 4*c)/2;
-%                 D(l,l) = (ell_estim^2+c*ell_estim)/(ell_estim^2-c);
-            end
-        end
+%         sigma2_estim = mean(eigs_SCM(k+1:end));
+% %         sigma2_estim = sigma2;
+%         ell_estim = zeros(1,k);
+%         for l = 1:k
+%             lambda = eigs_SCM(l)/sigma2_estim;
+%             if lambda>=(1+sqrt(c))^2
+%                 ell_estim(l) = (lambda-(1+c))/2 + sqrt( (lambda-(1+c))^2 - 4*c)/2;
+% %                 D(l,l) = (ell_estim^2+c*ell_estim)/(ell_estim^2-c);
+%             end
+%         end
 
 
         J_tmp = eye(N);
@@ -78,19 +78,19 @@ for SNR_i = 1: length(SNRList)
         eigs_Phi = eigs_Phi(index);
 %         EigenValue_Result(:,jj) = eigs_Phi;
         ESPRIT_DoA = angle(eigs_Phi);
-        ESPRIT_DoA = sort(ESPRIT_DoA).';
+        ESPRIT_DoA = sort(ESPRIT_DoA).'
         ESPRIT_MSE(jj,SNR_i) = norm(ESPRIT_DoA - theta_true).^2 / k;
 
 
         % 修正参数 （ESPRIT-Modified）
-%         g1 = (1- c * (eigs_P(1)/sigma2)^(-2))/(1 + c * (eigs_P(1)/sigma2)^(-1));
-%         g2 = (1- c * (eigs_P(2)/sigma2)^(-2))/(1 + c * (eigs_P(2)/sigma2)^(-1));
+        g1 = (1- c * (eigs_P(1)/sigma2)^(-2))/(1 + c * (eigs_P(1)/sigma2)^(-1));
+        g2 = (1- c * (eigs_P(2)/sigma2)^(-2))/(1 + c * (eigs_P(2)/sigma2)^(-1));
 
 %         g1 = (1- c * (ell_estim(1))^(-2))/(1 + c * (ell_estim(1))^(-1))
 %         g2 = (1- c * (ell_estim(2))^(-2))/(1 + c * (ell_estim(2))^(-1))
 
-        g1 = ((ell_estim(1))^(2) - c)/((ell_estim(1))^(2) + c*(ell_estim(1))^(1));
-        g2 = ((ell_estim(2))^(2) - c)/((ell_estim(2))^(2) + c*(ell_estim(2))^(1));
+%         g1 = ((ell_estim(1))^(2) - c)/((ell_estim(1))^(2) + c*(ell_estim(1))^(1));
+%         g2 = ((ell_estim(2))^(2) - c)/((ell_estim(2))^(2) + c*(ell_estim(2))^(1));
 % 
 %         if(isinf(g2))
 %             g2 = 1 ;
@@ -111,24 +111,25 @@ for SNR_i = 1: length(SNRList)
         eigs_Phi = eigs_Phi(index);
 %         EigenValue_Result2(:,jj) = eigs_Phi;
         GESPRIT_DoA = angle(eigs_Phi);
-        GESPRIT_DoA = sort(GESPRIT_DoA).';
+        GESPRIT_DoA = sort(GESPRIT_DoA).'
+        theta_true
         GESPRIT_MSE(jj,SNR_i) = norm(GESPRIT_DoA - theta_true).^2 / k;
     end
 end
-ESPRIT_MSE_E = mean(ESPRIT_MSE,1);
-GESPRIT_MSE_E = mean(GESPRIT_MSE,1);
+ESPRIT_MSE_E = mean(ESPRIT_MSE,1)
+GESPRIT_MSE_E = mean(GESPRIT_MSE,1)
 
 
-figure;
-hold on ;
-
-xline(2,'LineWidth',1,'LineStyle','--');  % condition
-plot(SNRList,log10(ESPRIT_MSE_E),'LineStyle','-','Color','#0072BD','Marker','x','LineWidth',1.5)
-plot(SNRList,log10(GESPRIT_MSE_E),'LineStyle','-','Color','#0072BD','Marker','o','LineWidth',1.5)
-% xline(2)
-legend('threshold','ESPRIT','GESPRIT')
-% 特征值的渐进值(传统ESPRIT)
+% figure;
+% hold on ;
 % 
+% xline(2,'LineWidth',1,'LineStyle','--');  % condition
+% plot(SNRList,log10(ESPRIT_MSE_E),'LineStyle','-','Color','#0072BD','Marker','x','LineWidth',1.5)
+% plot(SNRList,log10(GESPRIT_MSE_E),'LineStyle','-','Color','#0072BD','Marker','o','LineWidth',1.5)
+% % xline(2)
+% legend('threshold','ESPRIT','GESPRIT')
+% % 特征值的渐进值(传统ESPRIT)
+
 % [U_APA,eigs_APA] = eig((A*sqrtm(P))*(A*sqrtm(P))','vector');
 % [eigs_APA, index] = sort(eigs_APA,'descend');
 % 
