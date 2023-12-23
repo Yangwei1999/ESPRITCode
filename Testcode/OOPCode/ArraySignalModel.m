@@ -91,7 +91,7 @@ classdef ArraySignalModel < handle
         end
 
         
-        function [DoA,MSE,Bias,EigenValues] = GetESPRIT(obj)
+        function [DoA,MSE,EigenValues] = GetESPRIT(obj)
             %% Origin esprit methods
                 J_tmp = eye(obj.N);
                 n =  obj.N-1;
@@ -105,9 +105,9 @@ classdef ArraySignalModel < handle
                 DoA = DoA.' ;
                 EigenValues = EigenValues(index);
                 MSE = sum((DoA - obj.ThetaTrue).^2) / obj.k;
-                Bias =  sum(abs(DoA - obj.ThetaTrue))  / obj.k;
+%                 Bias =  sum(abs(DoA - obj.ThetaTrue))  / obj.k;
         end
-        function [DoA,MSE,Bias,EigenValues] = GetGESPRIT(obj,type)
+        function [DoA,MSE,EigenValues] = GetGESPRIT(obj,type)
             %% Gereral esprit methods
 
                 switch type
@@ -159,7 +159,7 @@ classdef ArraySignalModel < handle
                 DoA = DoA.';
                 EigenValues = EigenValues(index);
                 MSE = sum((DoA - obj.ThetaTrue).^2) / obj.k;
-                Bias =  sum(abs(DoA - obj.ThetaTrue))  / obj.k;
+%                 Bias =  sum(abs(DoA - obj.ThetaTrue))  / obj.k;
         end
 
         
@@ -232,10 +232,25 @@ classdef ArraySignalModel < handle
             CRB = obj.sigma2 / (2*obj.T) *inv(real(obj.D'*(eye(obj.N)-obj.A*inv(obj.A'*obj.A)*obj.A')*obj.D) .*eye(obj.k));
             
         end
-        function CRB = GetEigenvalue(obj)
-            % CRB = obj.sigma2 / (2*obj.T) *inv(real(obj.D'*(eye(obj.N)-obj.A*inv(obj.A'*obj.A)*obj.A')*obj.D) .*eye(obj.k));
+
+        function [MSE,Var,Bias] = GetStatNum(obj,DOA_Nb,MSE_Nb)
+
+            MSE     =   mean(MSE_Nb,1);
+            DOA_E   =   mean(DOA_Nb,1);
             
+            Var   =   var(DOA_Nb,0,1);
+            Var   =   mean(Var);
+
+            Bias    =  (DOA_E - obj.ThetaTrue).^2;
+            Bias    =  mean(Bias);
+
+
+
+
+
+
         end
+
 
 
     end
