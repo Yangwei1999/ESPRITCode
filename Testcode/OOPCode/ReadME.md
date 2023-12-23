@@ -37,11 +37,13 @@
 在相关closely spaced DoA 不相关信号情况下，ESPRIT GESPRIT MUSIC GMUSIC CRB 的曲线($N = 80,T =160$ Speration condition SNR $=0$)
 ![123](./Figure/5_2.jpg)  
 
+**实验6** ：
+在相关closely spaced DoA 相关信号情况下，ESPRIT算法特征值的极限
 
 ---
 
 
 
 **Quesitons**
-* Q2 : 重根条件下无法算，但是结果表明没有问题，实际上可以忽略重根影响
-* Q3 ：当不满足分离条件的时候，舍弃特征值还是不修复
+* Q1 : 重根条件下无法算，但是结果表明没有问题，实际上可以忽略重根影响
+* Q2 ：当不满足分离条件的时候，舍弃特征值还是不修复
