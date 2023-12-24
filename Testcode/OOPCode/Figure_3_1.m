@@ -1,6 +1,7 @@
 
 clear ;
 clc;
+% 初始settings
 coeff =10;
 N = 40 * coeff;
 T = 80 * coeff;
@@ -10,41 +11,57 @@ P = [1 0.4; 0.4 1];
 SNRList = 2;
 nbLoop = 100;
 
+% 实例化所有对象
 ArrayObject = [];
 for ii = 1:length(SNRList)
     ArrayObject = [ArrayObject ArraySignalModel(N,T,theta_true,P,SNRList(ii))];
 end
 
-ESPRITDoA = zeros(nbLoop,length(SNRList),2);
-ESPRITEigenValue = zeros(nbLoop,length(SNRList),2);
-GESPRITDoA = zeros(nbLoop,length(SNRList),2);
-GESPRITEigenValue = zeros(nbLoop,length(SNRList),2);
-% GESPRIT2_MSE_Res = zeros(nbLoop,length(SNRList));
+% 跟Loop 有关的变量
+ESPRITDoA_Nb = zeros(nbLoop,2);
+ESPRITMSE_Nb =  zeros(nbLoop,1);
+ESPRITEiValue_Nb= zeros(nbLoop,2);
+GESPRITDoA_Nb = zeros(nbLoop,2);
+GESPRITMSE_Nb =  zeros(nbLoop,1);
+GESPRITEiValue_Nb = zeros(nbLoop,2);
+
+
+% 跟自变量SNRList有关的变量
+ESPRITMSE =  zeros(1,length(SNRList));
+ESPRITVar =  zeros(1,length(SNRList));
+ESPRITBias =  zeros(1,length(SNRList));
+GESPRITMSE = zeros(1,length(SNRList));
+GESPRITVar =  zeros(1,length(SNRList));
+GESPRITBias =  zeros(1,length(SNRList));
 CRB_Res         = zeros(1,length(SNRList));
-% GESPRIT2_MSE_Res = zeros(nbLoop,length(SNRList));
+
 for object_i = 1:length(ArrayObject)
     ObjectNow = ArrayObject(object_i);
     for Loop_i = 1: nbLoop  
+        % 跟loop 相关的写在此处
         disp([num2str(object_i) '--' num2str(Loop_i)])
         ObjectNow.GenerateGuass();
-        [ESPRITDoA(Loop_i,object_i,:),~,~,ESPRITEigenValue(Loop_i,object_i,:)]  = ObjectNow.GetESPRIT();
-        [GESPRITDoA(Loop_i,object_i,:),~,~,GESPRITEigenValue(Loop_i,object_i,:)]  = ObjectNow.GetGESPRIT('Theory');
+        [ESPRITDoA_Nb(Loop_i,:),ESPRITMSE_Nb(Loop_i,1),ESPRITEiValue_Nb(Loop_i,:)]  = ObjectNow.GetESPRIT();
+        [GESPRITDoA_Nb(Loop_i,:),GESPRITMSE_Nb(Loop_i,1),GESPRITEiValue_Nb(Loop_i,:)]  = ObjectNow.GetGESPRIT('Theory');
 %         [GESPRIT2DoA,GESPRIT2_MSE_Res(Loop_i,object_i),~]  = ObjectNow.GetGESPRIT('Empirical-1');
     end
+    % 跟obejct相关的写在此处
+    [ESPRITMSE(1,object_i),ESPRITVar(1,object_i),ESPRITBias(1,object_i)] = ObjectNow.GetStatNum(ESPRITDoA_Nb,ESPRITMSE_Nb);
+    [GESPRITMSE(1,object_i),GESPRITVar(1,object_i),GESPRITBias(1,object_i)] = ObjectNow.GetStatNum(GESPRITDoA_Nb,GESPRITMSE_Nb);
     CRB_Res(1,object_i) = trace(ObjectNow.GetCRB())/ObjectNow.k;
 end
-% theta_true
-% ESPRITDoA
+
+
 ObjectNow = ArrayObject(1);
+
 %% 实验部分
 % 实验DOA
-
-ESPRIT_DOA_E = squeeze(mean(ESPRITDoA,1))
-GESPRIT_DOA_E = squeeze(mean(GESPRITDoA,1))
-theta_true
+% MSE
+[ESPRITMSE(1,1),ESPRITVar(1,1),ESPRITBias(1,1)]
+[GESPRITMSE(1,1),GESPRITVar(1,1),GESPRITBias(1,1)]
 % 实验特征值
-ESPRITEigenValue_E = squeeze(mean(ESPRITEigenValue,1))
-GESPRITEigenValue_E= squeeze(mean(GESPRITEigenValue,1))
+ESPRITEigenValue_E = (mean(ESPRITEiValue_Nb,1))
+GESPRITEigenValue_E= (mean(GESPRITEiValue_Nb,1))
 
 %% 理论部分
 % 获取对象信息
