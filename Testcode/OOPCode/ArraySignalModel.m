@@ -144,7 +144,6 @@ classdef ArraySignalModel < handle
 
                 end
                 G = sqrt(1./(g*g.'));
-
                 J_tmp = eye(obj.N);
                 n = obj.N-1;
                 J1 = J_tmp(1:n,:);
@@ -234,7 +233,6 @@ classdef ArraySignalModel < handle
         end
 
         function [MSE,Var,Bias] = GetStatNum(obj,DOA_Nb,MSE_Nb)
-
             MSE     =   mean(MSE_Nb,1);
             DOA_E   =   mean(DOA_Nb,1);
             
@@ -243,17 +241,6 @@ classdef ArraySignalModel < handle
 
             Bias    =  (DOA_E - obj.ThetaTrue).^2;
             Bias    =  mean(Bias);
-
-
-
-
-
-
         end
-
-
-
     end
-
-
 end
