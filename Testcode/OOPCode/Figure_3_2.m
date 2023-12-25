@@ -1,7 +1,7 @@
 
 clear ;
 clc;
-coeff =1:5:40;
+coeff =1:5:30;
 N = 40 ;
 T = 80 ;
 % theta_true = [0,5*2*pi/N];

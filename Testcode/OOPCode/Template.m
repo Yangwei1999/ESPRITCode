@@ -20,7 +20,7 @@ for ii = 1:length(VariableList)
     ArrayObject = [ArrayObject ArraySignalModel(N,T,theta_true,P,VariableList(ii))];
 end
 
-nbLoop = 100;
+nbLoop = 20;
 % 跟Loop 有关的变量
 ESPRITDoA_Nb = zeros(nbLoop,2);
 ESPRITMSE_Nb =  zeros(nbLoop,1);
@@ -73,45 +73,37 @@ for object_i = 1:length(ArrayObject)
     CRB_Res(1,object_i) = trace(ObjectNow.GetCRB())/ObjectNow.k;
 end
 
-drawSwtich = 1 ;
-drawMSE    = 1 ;
-drawBias   = 1 ;
 
-if(drawSwtich)
+figure;
+hold on ;
+xline(2,'LineWidth',1,'LineStyle','--');  % condition
+plot(VariableList,log10(ESPRITMSE),'LineStyle','-','Color',	'#77AC30','Marker','x','LineWidth',1.5)
+plot(VariableList,log10(GESPRITMSE),'LineStyle','-','Color','#77AC30','Marker','o','LineWidth',1.5)
+plot(VariableList,log10(MUSICMSE),'LineStyle','-','Color','#0072BD','Marker','x','LineWidth',1.5)
+plot(VariableList,log10(GMUSICMSE),'LineStyle','-','Color','#0072BD','Marker','o','LineWidth',1.5)
+plot(VariableList,log10(CRB_Res),'LineStyle','--','Color','#4DBEEE','LineWidth',1.5)
+legend('threshold','ESPRIT','DESPRIT','MUSIC','GMUSIC','CRB');
+% legend('threshold','ESPRIT','GESPRIT','CRB')
 
-    if(drawMSE)
-        figure;
-        hold on ;
-        xline(2,'LineWidth',1,'LineStyle','--');  % condition
-        plot(VariableList,log10(ESPRITMSE),'LineStyle','-','Color',	'#77AC30','Marker','x','LineWidth',1.5)
-        plot(VariableList,log10(GESPRITMSE),'LineStyle','-','Color','#77AC30','Marker','o','LineWidth',1.5)
-        plot(VariableList,log10(MUSICMSE),'LineStyle','-','Color','#0072BD','Marker','x','LineWidth',1.5)
-        plot(VariableList,log10(GMUSICMSE),'LineStyle','-','Color','#0072BD','Marker','o','LineWidth',1.5)
-        plot(VariableList,log10(CRB_Res),'LineStyle','--','Color','#4DBEEE','LineWidth',1.5)
-        legend('threshold','ESPRIT','DESPRIT','MUSIC','GMUSIC','CRB');
-        % legend('threshold','ESPRIT','GESPRIT','CRB')
-    end
-    
-    if(drawBias)
-        figure;
-        subplot(1,2,1)
-        hold on ;
-        plot(VariableList,log10(ESPRITMSE),'LineStyle','-','Color',	'#77AC30','Marker','x','LineWidth',1.5)
-        plot(VariableList,log10(ESPRITVar),'LineStyle','-','Color','#77AC30','Marker','o','LineWidth',1.5)
-        plot(VariableList,log10(ESPRITBias),'LineStyle','-','Color','#77AC30','Marker','*','LineWidth',1.5)
-        legend('MSE','Var','Bias')
-        title('ESPRIT')
-        xlabel('N')
-    %     
-        subplot(1,2,2)
-        hold on ;
-        plot(VariableList,log10(GESPRITMSE),'LineStyle','-','Color','#77AC30','Marker','x','LineWidth',1.5)
-        plot(VariableList,log10(GESPRITVar),'LineStyle','-','Color','#77AC30','Marker','o','LineWidth',1.5)
-        plot(VariableList,log10(GESPRITBias),'LineStyle','-','Color','#77AC30','Marker','*','LineWidth',1.5)
-        legend('MSE','Var','Bias')
-        title('GESPRIT')
-        xlabel('N')
-    end
 
+if(1)
+    figure;
+    subplot(1,2,1)
+    hold on ;
+    plot(VariableList,log10(ESPRITMSE),'LineStyle','-','Color',	'#77AC30','Marker','x','LineWidth',1.5)
+    plot(VariableList,log10(ESPRITVar),'LineStyle','-','Color','#77AC30','Marker','o','LineWidth',1.5)
+    plot(VariableList,log10(ESPRITBias),'LineStyle','-','Color','#77AC30','Marker','*','LineWidth',1.5)
+    legend('MSE','Var','Bias')
+    title('ESPRIT')
+    xlabel('N')
+%     
+    subplot(1,2,2)
+    hold on ;
+    plot(VariableList,log10(GESPRITMSE),'LineStyle','-','Color','#77AC30','Marker','x','LineWidth',1.5)
+    plot(VariableList,log10(GESPRITVar),'LineStyle','-','Color','#77AC30','Marker','o','LineWidth',1.5)
+    plot(VariableList,log10(GESPRITBias),'LineStyle','-','Color','#77AC30','Marker','*','LineWidth',1.5)
+    legend('MSE','Var','Bias')
+    title('GESPRIT')
+    xlabel('N')
 end
 

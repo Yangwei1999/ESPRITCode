@@ -33,26 +33,19 @@
 
 ---
 
-**实验5** ：
-在相关closely spaced DoA 相关信号情况下，ESPRIT GESPRIT MUSIC GMUSIC CRB 的曲线($N = 80,T =160$ Speration condition SNR $=0$)
-![123](./Figure/5.jpg)  
-在相关closely spaced DoA 不相关信号情况下，ESPRIT GESPRIT MUSIC GMUSIC CRB 的曲线($N = 80,T =160$ Speration condition SNR $=0$)
-![123](./Figure/5_2.jpg)  
 
-**实验6** ：
-在相关closely spaced DoA 相关信号情况下，ESPRIT算法特征值的极限
-
----
-
-
-
-**Quesitons**
+<!-- **Quesitons**
 * Q2 : 重根条件下无法算，但是结果表明没有问题，实际上可以忽略重根影响
 * Q3 ：当不满足分离条件的时候，舍弃特征值还是不修复    
 talk 2023-12-21；
 1. 重根问题先不考虑
 2. 不满足分离条件时候应该舍去特征值
----
+--- -->
 
 ## 2023-12-23 
 编写函数计算MSE Var Bias 封装类
+
+
+## 重新仿真paper中的实验
+need to do  
+* 
