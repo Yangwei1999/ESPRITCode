@@ -17,6 +17,7 @@ classdef ArraySignalModel < handle
         EigsHat      %  Emperical eigenvalues
         UsTrue       %  Gorund Signal Space
         EigsTrue     %  Gorund Signal eigenvalus
+        SCMHat 
 %         GridGap    
 %         Gridinterval
         
@@ -73,7 +74,7 @@ classdef ArraySignalModel < handle
 
         end
 
-        function [DoA,MSE,Bias,EigenValues] = GetESPRITsub(obj,index1,index2,Bias)
+        function [DoA,MSE,EigenValues,Angle] = GetESPRITsub(obj,index1,index2,Bias)
             %% Origin esprit methods
                 J_tmp = eye(obj.N);
                 n =  index2 - index1;
@@ -84,6 +85,7 @@ classdef ArraySignalModel < handle
                 Phi =  inv(Phi1)* Phi2;
                 [~,EigenValues] = eig(Phi,'vector');
                 [DoA,index] = sort(angle(EigenValues));
+                Angle = DoA.';
                 DoA = DoA.'/Bias  ;
                 EigenValues = EigenValues(index);
                 MSE = sum((DoA - obj.ThetaTrue).^2) / obj.k;
@@ -219,6 +221,7 @@ classdef ArraySignalModel < handle
             % 构造协方差矩阵  生成新的子空间
             X = obj.A*obj.S + obj.Z;
             SCM = X*(X')/obj.T;
+            obj.SCMHat = SCM;
             [U,eigs_SCM] = eig(SCM,'vector');
             [eigs_SCM, index] = sort(eigs_SCM,'descend');
             U = U(:, index);

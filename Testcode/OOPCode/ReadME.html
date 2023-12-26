@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>ReadME.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="2023-12-19">2023-12-19</h1>
+<p><strong>实验1</strong> ：在不相关widely spaced DoA 情况下，ESPRIT GESPRIT MUSIC GMUSIC CRB 的曲线($N = 80,T =160$  SNR $=0$)
+<a href="https://github.com/Yangwei1999/ESPRITCode/tree/DebugTest/Testcode/OOPCode/Figure/2.jpg"><img src="./Figure/1.jpg" alt="123">  </a>
+此时GESPRI\ ESPRIT一致 MUSIC 和GMUSIC仍然保持一致</p>
+<hr>
+<p><strong>实验2</strong> ：在相关widely spaced DoA 情况下，ESPRIT GESPRIT MUSIC GMUSIC CRB 的曲线($N = 80,T =160$ Speration condition SNR $=0$)
+<img src="./Figure/2.jpg" alt="123"><br>
+此时GESPRI算法应该优于ESPRIT算法  MUSIC 和GMUSIC保持一致</p>
+<hr>
+<p><strong>实验3</strong> ：验证N,T增大特征值和特征值的极限的谱范数距离（还有N、T较大的单独实验） 期望和方差<br>
+3.1 先跑SNR=2的情况下的特征值极限值和理论值<br>
+<img src="./Figure/3.jpg" alt="Pais">{:height=&quot;10%&quot; width=&quot;10%&quot;}
+theta_true = [0,pi/3];<br>
+coeff =10;<br>
+N = 40 * coeff;<br>
+T = 80 * coeff;</p>
+<p>3.2 $E[\hat{\theta} - \theta] , Var[\hat{\theta} - \theta]$</p>
+<h2 id="123%E6%96%B9%E5%B7%AE%E5%86%8D%E9%99%8D%E4%BD%8E%E4%BD%86%E6%98%AF%E5%81%8F%E5%B7%AE%E5%A2%9E%E9%AB%98%E6%89%80%E4%BB%A5%E5%8F%AF%E4%BB%A5%E5%81%9A%E4%B8%80%E4%B8%AA%E5%AE%9E%E9%AA%8C%E7%9C%8B%E4%B8%8B%E9%9A%8F%E7%9D%80n%E5%A2%9E%E5%A4%A7%E7%89%B9%E5%BE%81%E5%80%BC%E7%9A%84%E6%9E%81%E9%99%90%E6%98%8E%E5%A4%A9%E5%81%9A"><img src="./Figure/3_2.jpg" alt="123"><br>
+方差再降低，但是偏差增高，所以可以做一个实验
+看下随着N增大特征值的极限（明天做）</h2>
+<p><strong>实验4</strong> ：ESPRIT方法与子阵列的取值数量的关系 考虑在不同的子阵列下<br>
+貌似阵列取少后会出现 在pi/ pi 相位模糊的情况</p>
+<hr>
+<!-- **Quesitons**
+* Q2 : 重根条件下无法算，但是结果表明没有问题，实际上可以忽略重根影响
+* Q3 ：当不满足分离条件的时候，舍弃特征值还是不修复    
+talk 2023-12-21；
+1. 重根问题先不考虑
+2. 不满足分离条件时候应该舍去特征值
+--- -->
+<!-- * 画不同$\Delta$估计器的方差 偏差
+其实我们用的是TAM
+尝试两种--
+1. 一种是先验条件 1/ds < u < 1/ds   
+2. 一种是尝试进行矫正
+廖老师好，我查阅了一些资料，我发现最早的ESPRIT论文里面，也是仅考虑了阵列的偏移为ds=1（deleta），然后我找了下资料，一本书上，他是这么说的，当ds=1的时候，解是唯一的，当ds>1的时候，需要一个先验条件，就是入射角度需要在-pi/ds ~1pi/ds之间才是唯一的解，也就是随着ds增大，可获得角度的区间越小
+
+然后我跑了两组实验，一组是两个角度，满足-pi/ds < theta_i< 1pi/ds,然后计算MSE,BIAS,var，发现确实随着ds的增大，Var MSE 是降低的，然后我看这本书也是这样
+
+我跑了n=N/2的情况（单角度，因为多角度的话没办法区分哪个对应的真实角度是哪个），采用的是估计出来后根据2pi周期去找跟真实角度最接近的，发现他的MSE是最小的，我发现不管n怎么取，bias都是很小的（几乎无偏），然后随着n的增大，MSE和方差都减小。
+
+我的感觉是，这个delta取1 的时候，是不需要先验条件或者预处理，可以直接用，delta>1的时候，是需要先验条件（-pi/ds < theta_i< pi/ds，或者真实角度的范围区间），这个先验条件导致随着delta的增大，估计器的方差降低 -->
+
+</body>
+</html>
