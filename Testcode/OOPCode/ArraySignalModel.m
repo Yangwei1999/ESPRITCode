@@ -17,6 +17,8 @@ classdef ArraySignalModel < handle
         EigsHat      %  Emperical eigenvalues
         UsTrue       %  Gorund Signal Space
         EigsTrue     %  Gorund Signal eigenvalus
+        SCMHat 
+        SepCondition % sepration condition 
 %         GridGap    
 %         Gridinterval
         
@@ -50,31 +52,21 @@ classdef ArraySignalModel < handle
             U_APA = U_APA(:, index);
             obj.UsTrue = U_APA(:,1:obj.k);
             eigs_APA = eigs_APA(1:obj.k);
+
+            MinEig = min(eigs_APA);
+
+            obj.SepCondition = 10 * log10(sqrt(obj.c)/MinEig);
             obj.EigsTrue = eigs_APA;
 
             sigma2 = 10.^(-SNR/10);
             obj.sigma2 =sigma2;
 
-%             obj.GridGap = GridGap;
-% 
-%             intervalabs = pi/4;
-%             obj.Gridinterval = [-intervalabs,+intervalabs];
-
-            % GenerateGuass(obj);
-
-            % % 生成S
-            % obj.S = sqrtm(P)*sqrt(1/2) *(randn(k,T) + 1i *randn(k,T));
-            % % 生成Z noise 
-            % sigma2 = 10.^(-SNR/10);
-            % Z = sqrt(sigma2/2) * (randn(N,T) + 1i* randn(N,T));
-            % obj.Z = Z;
-            % obj.sigma2 =sigma2;
-
+%             obj.GenerateGuass();
 
         end
 
-        function [DoA,MSE,Bias,EigenValues] = GetESPRITsub(obj,index1,index2,Bias)
-            %% Origin esprit methods
+        function [DoA,MSE,EigenValues,Angle] = GetESPRITsub(obj,index1,index2,Bias)
+            %% esprit methods(\delta \neq 1)
                 J_tmp = eye(obj.N);
                 n =  index2 - index1;
                 J1 = J_tmp(index1:index2,:);
@@ -84,10 +76,10 @@ classdef ArraySignalModel < handle
                 Phi =  inv(Phi1)* Phi2;
                 [~,EigenValues] = eig(Phi,'vector');
                 [DoA,index] = sort(angle(EigenValues));
+                Angle = DoA.';
                 DoA = DoA.'/Bias  ;
                 EigenValues = EigenValues(index);
                 MSE = sum((DoA - obj.ThetaTrue).^2) / obj.k;
-                Bias =  sum(abs(DoA - obj.ThetaTrue))  / obj.k;
         end
 
         
@@ -105,42 +97,36 @@ classdef ArraySignalModel < handle
                 DoA = DoA.' ;
                 EigenValues = EigenValues(index);
                 MSE = sum((DoA - obj.ThetaTrue).^2) / obj.k;
-%                 Bias =  sum(abs(DoA - obj.ThetaTrue))  / obj.k;
+
         end
         function [DoA,MSE,EigenValues] = GetGESPRIT(obj,type)
             %% Gereral esprit methods
 
+                % Estimate sigma2
+                sigma2_estim = mean(obj.EigsHat(obj.k+1:end));
+                ell_estim = zeros(obj.k,1);
+                for l = 1:obj.k
+                    lambda = obj.EigsHat(l)/sigma2_estim;
+                    if lambda>=(1+sqrt(obj.c))^2
+                        ell_estim(l) = (lambda-(1+obj.c))/2 + sqrt( (lambda-(1+obj.c))^2 - 4*obj.c)/2;
+                    end
+                end
+
                 switch type
                     case 'Theory'
-                        % case 1 : 采用理论修正构造G 
+                        % case 1 : Theory
                         g = (1- obj.c .* (obj.EigsTrue./obj.sigma2).^(-2))./(1 + obj.c .* (obj.EigsTrue./obj.sigma2).^(-1));
-            
+                        g_True = g;
                     case 'Empirical-1'
-                        % case 2 : 采用估计修正 估计信噪比 估计l !真实情况
-                        sigma2_estim = mean(obj.EigsHat(obj.k+1:end));
-                        ell_estim = zeros(obj.k,1);
-                        for l = 1:obj.k
-                            lambda = obj.EigsHat(l)/sigma2_estim;
-                            if lambda>=(1+sqrt(obj.c))^2
-                                ell_estim(l) = (lambda-(1+obj.c))/2 + sqrt( (lambda-(1+obj.c))^2 - 4*obj.c)/2;
-                            end
-                        end
+                        % case 2 : discard eigenvector
                         g = ((ell_estim).^(2)- obj.c)./((ell_estim).^(2) + obj.c .* (ell_estim).^(1));
                     case 'Empirical-2'
-                        % case 2 : 采用估计修正 估计信噪比 估计l !真实情况
-                        sigma2_estim = mean(obj.EigsHat(obj.k+1:end));
-                        ell_estim = zeros(obj.k,1);
-                        for l = 1:obj.k
-                            lambda = obj.EigsHat(l)/sigma2_estim;
-                            if lambda>=(1+sqrt(obj.c))^2
-                                ell_estim(l) = (lambda-(1+obj.c))/2 + sqrt( (lambda-(1+obj.c))^2 - 4*obj.c)/2;
-                            end
-                        end
+                        % case 3 : retain eigenvector
                         g = ((ell_estim).^(2)- obj.c)./((ell_estim).^(2) + obj.c .* (ell_estim).^(1));
                         mask1 = isinf(g);
                         g(mask1) = 1;
                     otherwise
-                        g = (1- obj.c .* (obj.EigsTrue./obj.sigma2).^(-2))./(1 + obj.c .* (obj.EigsTrue./obj.sigma2).^(-1));
+                        % g = (1- obj.c .* (obj.EigsTrue./obj.sigma2).^(-2))./(1 + obj.c .* (obj.EigsTrue./obj.sigma2).^(-1));
 
                 end
                 G = sqrt(1./(g*g.'));
@@ -162,7 +148,7 @@ classdef ArraySignalModel < handle
         end
 
         
-        function [DoA,MSE,Bias] = GetMusic(obj,GridInterval,GridGap)
+        function [DoA,MSE] = GetMusic(obj,GridInterval,GridGap)
             % MUSIC可以和GMUSIC同时计算
             w_theta = linspace(GridInterval(1),GridInterval(2),GridGap);
             a = @(theta) exp(1i*theta*(0:obj.N-1)')/sqrt(obj.N);
@@ -178,10 +164,10 @@ classdef ArraySignalModel < handle
             locs = locs(1:obj.k);
             DoA = sort(w_theta(locs),'ascend');
             MSE = sum((DoA - obj.ThetaTrue).^2) / obj.k;
-            Bias =  sum(abs(DoA - obj.ThetaTrue))  / obj.k;
+            % Bias =  sum(abs(DoA - obj.ThetaTrue))  / obj.k;
         end
 
-        function [DoA,MSE,Bias] = GetGMusic(obj,GridInterval,GridGap)
+        function [DoA,MSE] = GetGMusic(obj,GridInterval,GridGap)
             % MUSIC可以和GMUSIC同时计算
             w_theta = linspace(GridInterval(1),GridInterval(2),GridGap);
             a = @(theta) exp(1i*theta*(0:obj.N-1)')/sqrt(obj.N);
@@ -206,7 +192,70 @@ classdef ArraySignalModel < handle
             locs = locs(1:obj.k);
             DoA = sort(w_theta(locs),'ascend');
             MSE = sum((DoA - obj.ThetaTrue).^2) / obj.k;
-            Bias =  sum(abs(DoA - obj.ThetaTrue))  / obj.k;
+            % Bias =  sum(abs(DoA - obj.ThetaTrue))  / obj.k;
+        end
+
+        function [DoA_MUSIC,MSE_MUSIC,DoA_GMUSIC,MSE_GMUSIC] = GetMusicType(obj,GridInterval,GridGap,type)
+            % MUSIC可以和GMUSIC同时计算
+            w_theta = linspace(GridInterval(1),GridInterval(2),GridGap);
+            a = @(theta) exp(1i*theta*(0:obj.N-1)')/sqrt(obj.N);
+            store_output = zeros(length(w_theta),2);
+
+            % Estimate sigma2
+            sigma2_estim = mean(obj.EigsHat(obj.k+1:end));
+            ell_estim = zeros(obj.k,1);
+            for l = 1:obj.k
+                lambda = obj.EigsHat(l)/sigma2_estim;
+                if lambda>=(1+sqrt(obj.c))^2
+                    ell_estim(l) = (lambda-(1+obj.c))/2 + sqrt( (lambda-(1+obj.c))^2 - 4*obj.c)/2;
+                end
+            end
+
+            switch type
+                case 'Theory'
+                    % case 1 : Theory
+                    g = (1- obj.c .* (obj.EigsTrue./obj.sigma2).^(-2))./(1 + obj.c .* (obj.EigsTrue./obj.sigma2).^(-1));
+                case 'Empirical-1'
+                    % case 2 : discard eigenvector
+                    g = ((ell_estim).^(2)- obj.c)./((ell_estim).^(2) + obj.c .* (ell_estim).^(1));
+                case 'Empirical-2'
+                    % case 3 : retain eigenvector
+                    g = ((ell_estim).^(2)- obj.c)./((ell_estim).^(2) + obj.c .* (ell_estim).^(1));
+                    mask1 = isinf(g);
+                    g(mask1) = 1;
+                otherwise
+                    % g = (1- obj.c .* (obj.EigsTrue./obj.sigma2).^(-2))./(1 + obj.c .* (obj.EigsTrue./obj.sigma2).^(-1));
+            end
+
+            G = diag(1./g);
+            for j = 1:length(w_theta)
+                %GMUSIC 方法
+                theta = w_theta(j);
+                % 传统MUSIC
+                store_output(j,1) = (real(( a(theta)'*obj.UsHat*(obj.UsHat')*a(theta))));
+                % GMUSIC
+                store_output(j,2) = (real(( a(theta)'*obj.UsHat*G*(obj.UsHat')*a(theta))));
+            end
+
+            % 处理MUSIC 部分
+            [pks,locs] = findpeaks(store_output(:,1).');
+            [~, index] = sort(pks,'descend');
+            locs = locs(index);
+            locs = locs(1:obj.k);
+            DoA_MUSIC = sort(w_theta(locs),'ascend');   % sorted by same order
+            MSE_MUSIC = sum((DoA_MUSIC - obj.ThetaTrue).^2) / obj.k;
+
+            % 处理GMUSIC 部分
+            [pks,locs] = findpeaks(store_output(:,2).');
+            [~, index] = sort(pks,'descend');
+            locs = locs(index);
+            locs = locs(1:obj.k);
+            DoA_GMUSIC = sort(w_theta(locs),'ascend');   % sorted by same order
+            MSE_GMUSIC = sum((DoA_GMUSIC - obj.ThetaTrue).^2) / obj.k;
+
+
+
+            % Bias =  sum(abs(DoA - obj.ThetaTrue))  / obj.k;
         end
 
         function GenerateGuass(obj)
@@ -219,6 +268,7 @@ classdef ArraySignalModel < handle
             % 构造协方差矩阵  生成新的子空间
             X = obj.A*obj.S + obj.Z;
             SCM = X*(X')/obj.T;
+            obj.SCMHat = SCM;
             [U,eigs_SCM] = eig(SCM,'vector');
             [eigs_SCM, index] = sort(eigs_SCM,'descend');
             U = U(:, index);
@@ -233,7 +283,7 @@ classdef ArraySignalModel < handle
         end
 
         function [MSE,Var,Bias] = GetStatNum(obj,DOA_Nb,MSE_Nb)
-            MSE     =   mean(MSE_Nb,1);
+            MSE     =   mean(MSE_Nb,2);
             DOA_E   =   mean(DOA_Nb,1);
             
             Var   =   var(DOA_Nb,0,1);

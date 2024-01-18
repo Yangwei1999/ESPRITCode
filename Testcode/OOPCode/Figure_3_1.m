@@ -1,67 +1,103 @@
-
 clear ;
 clc;
 % 初始settings
 coeff =10;
 N = 40 * coeff;
-T = 80 * coeff;
+T = 100 * coeff;
 % theta_true = [0,5*2*pi/N];
 theta_true = [0,pi/3];
+k = length(theta_true);
 P = [1 0.4; 0.4 1];
-SNRList = 2;
-nbLoop = 100;
+SNRList = 2 ;
 
-% 实例化所有对象
+ScanArea = [-pi/2 pi/2];
+ScanPrec = 4000;
+
+% 变量
+VariableList = SNRList;
+VariableLabel = 'SNR';
+
+% legend 
+ShowLegend ={'Threshold','ESPRIT','GESPRIT','MUSIC','GMUSIC','CRB'};
+
+%% 实例化所有变量对象
 ArrayObject = [];
-for ii = 1:length(SNRList)
-    ArrayObject = [ArrayObject ArraySignalModel(N,T,theta_true,P,SNRList(ii))];
+for ii = 1:length(VariableList)
+    ArrayObject = [ArrayObject ArraySignalModel(N,T,theta_true,P,VariableList(ii))];
 end
 
-% 跟Loop 有关的变量
-ESPRITDoA_Nb = zeros(nbLoop,2);
-ESPRITMSE_Nb =  zeros(nbLoop,1);
-ESPRITEiValue_Nb= zeros(nbLoop,2);
-GESPRITDoA_Nb = zeros(nbLoop,2);
-GESPRITMSE_Nb =  zeros(nbLoop,1);
-GESPRITEiValue_Nb = zeros(nbLoop,2);
+nbLoop =200;
+% 跟Loop 有关的变量  
+ReceivedNum1 = 2;
+DoA_Nb = zeros(ReceivedNum1,nbLoop,k);
+MSE_Nb =  zeros(ReceivedNum1,nbLoop);
+EiValue_Nb= zeros(ReceivedNum1,nbLoop,k);
 
+% 跟自变量VariableList有关的变量 
+ReceivedNum2 = ReceivedNum1;
+MSE_VList = zeros(ReceivedNum2,length(VariableList));
+Var_VList = zeros(ReceivedNum2,length(VariableList));
+Bias_VList = zeros(ReceivedNum2,length(VariableList));
+EiValue_VList = zeros(2,length(VariableList),k);  % Only ESPRIT-Type methods
+CRB_Res = zeros(1,length(VariableList));
 
-% 跟自变量SNRList有关的变量
-ESPRITMSE =  zeros(1,length(SNRList));
-ESPRITVar =  zeros(1,length(SNRList));
-ESPRITBias =  zeros(1,length(SNRList));
-GESPRITMSE = zeros(1,length(SNRList));
-GESPRITVar =  zeros(1,length(SNRList));
-GESPRITBias =  zeros(1,length(SNRList));
-CRB_Res         = zeros(1,length(SNRList));
-
+%%代码部分
 for object_i = 1:length(ArrayObject)
     ObjectNow = ArrayObject(object_i);
     for Loop_i = 1: nbLoop  
-        % 跟loop 相关的写在此处
         disp([num2str(object_i) '--' num2str(Loop_i)])
         ObjectNow.GenerateGuass();
-        [ESPRITDoA_Nb(Loop_i,:),ESPRITMSE_Nb(Loop_i,1),ESPRITEiValue_Nb(Loop_i,:)]  = ObjectNow.GetESPRIT();
-        [GESPRITDoA_Nb(Loop_i,:),GESPRITMSE_Nb(Loop_i,1),GESPRITEiValue_Nb(Loop_i,:)]  = ObjectNow.GetGESPRIT('Theory');
-%         [GESPRIT2DoA,GESPRIT2_MSE_Res(Loop_i,object_i),~]  = ObjectNow.GetGESPRIT('Empirical-1');
+        [DoA_Nb(1,Loop_i,:),MSE_Nb(1,Loop_i),EiValue_Nb(1,Loop_i,:)]  = ObjectNow.GetESPRIT();                
+        [DoA_Nb(2,Loop_i,:),MSE_Nb(2,Loop_i),EiValue_Nb(2,Loop_i,:)]  = ObjectNow.GetGESPRIT('Empirical-2');   
+    
+%         obj = ObjectNow;
+%         sigma2_estim = mean(obj.EigsHat(obj.k+1:end));
+%         ell_estim = zeros(obj.k,1);
+%         for l = 1:obj.k
+%             lambda = obj.EigsHat(l)/sigma2_estim;
+%             if lambda>=(1+sqrt(obj.c))^2
+%                 ell_estim(l) = (lambda-(1+obj.c))/2 + sqrt( (lambda-(1+obj.c))^2 - 4*obj.c)/2;
+%             end
+%         end
+        
+%         figure;
+%         h1 = histogram(eig(ObjectNow.SCMHat),'NumBins',100,'Normalization','pdf');
+% %         eig(obj.)
+% 
+%         g = (1- obj.c .* (obj.EigsTrue./obj.sigma2).^(-2))./(1 + obj.c .* (obj.EigsTrue./obj.sigma2).^(-1));
+%         g_True = g
+% 
+%         g = ((ell_estim).^(2)- obj.c)./((ell_estim).^(2) + obj.c .* (ell_estim).^(1))
+%         mask1 = isinf(g);
+%         g(mask1) = 1;
+
+
+%         [DoA_Nb(3,Loop_i,:),MSE_Nb(3,Loop_i),...
+%          DoA_Nb(4,Loop_i,:),MSE_Nb(4,Loop_i)] = ObjectNow.GetMusicType(ScanArea,ScanPrec,'Empirical-2');
     end
-    % 跟obejct相关的写在此处
-    [ESPRITMSE(1,object_i),ESPRITVar(1,object_i),ESPRITBias(1,object_i)] = ObjectNow.GetStatNum(ESPRITDoA_Nb,ESPRITMSE_Nb);
-    [GESPRITMSE(1,object_i),GESPRITVar(1,object_i),GESPRITBias(1,object_i)] = ObjectNow.GetStatNum(GESPRITDoA_Nb,GESPRITMSE_Nb);
+
+    for kk = 1:ReceivedNum2
+        [MSE_VList(kk,object_i),Var_VList(kk,object_i),Bias_VList(kk,object_i)] = ObjectNow.GetStatNum(squeeze(DoA_Nb(kk,:,:)),MSE_Nb(kk,:));
+    end
+    
+    for kk = 1:2
+        EiValue_VList(kk,object_i,:) = mean(squeeze(EiValue_Nb(kk,:,:)),1);
+    end
     CRB_Res(1,object_i) = trace(ObjectNow.GetCRB())/ObjectNow.k;
 end
-
 
 ObjectNow = ArrayObject(1);
 
 %% 实验部分
 % 实验DOA
 % MSE
-[ESPRITMSE(1,1),ESPRITVar(1,1),ESPRITBias(1,1)]
-[GESPRITMSE(1,1),GESPRITVar(1,1),GESPRITBias(1,1)]
+[MSE_VList(1,1),Var_VList(1,1),Bias_VList(1,1)]
+[MSE_VList(2,1),Var_VList(2,1),Bias_VList(2,1)]
 % 实验特征值
-ESPRITEigenValue_E = (mean(ESPRITEiValue_Nb,1))
-GESPRITEigenValue_E= (mean(GESPRITEiValue_Nb,1))
+ESPRITEigenValue_E = squeeze(EiValue_VList(1,:,:)).';
+GESPRITEigenValue_E = squeeze(EiValue_VList(2,:,:)).';
+% ESPRITEigenValue_E = (ESPRITEiValue_Nb())
+% GESPRITEigenValue_E= (mean(GESPRITEiValue_Nb,1))
 
 %% 理论部分
 % 获取对象信息
@@ -77,51 +113,91 @@ J2 = J_tmp(2:end,:);
 u1 = U_APA(:,1);
 u2 = U_APA(:,2);
 Alpha1 = g(1)  *  u1'*J1'*J2*u1 + g(2) * u2'*J1'*J2*u2;
-Alpha2 = g(1)  *  g(2) *(n/N).^2 * exp(1i * theta_true(1)) * exp(1i * theta_true(2));
+Alpha2 = g(1)  *  g(2) *(n/N).^2 * exp(1i * theta_true(1)) * exp(1i * theta_true(2))
+Alpha2 = g(1)  *  g(2) *(u1'*J1'*J2*u1 *u2'*J1'*J2*u2 - u1'*J1'*J2*u2 *u2'*J1'*J2*u1)
 Delta = Alpha1^2 - 4 * Alpha2;
-Lambda_Lit_ESPRIT = [(Alpha1 + sqrt(Delta))/2 *N/n (Alpha1 - sqrt(Delta))/2 *N/n]
+Lambda_Lit_ESPRIT = [(Alpha1 + sqrt(Delta))/2*(N/n)     (Alpha1 - sqrt(Delta))/2*(N/n)]
 % GESPRIT算法理论特征值
 Lambda_Lit_GESPRIT = (exp(1i*ObjectNow.ThetaTrue))
 
-figure;
-hold on ;
-% 
-quiver(0,0,real(Lambda_Lit_ESPRIT(1)),imag(Lambda_Lit_ESPRIT(1)),0,'LineWidth',1,'Color','#0072BD','LineStyle','--');
-quiver(0,0,real(Lambda_Lit_ESPRIT(2)),imag(Lambda_Lit_ESPRIT(2)),0,'LineWidth',1,'Color','#0072BD','LineStyle','--');
-% 
-quiver(0,0,real(ESPRITEigenValue_E(1)),imag(ESPRITEigenValue_E(1)),0,'LineWidth',1,'Color',	'#D95319','LineStyle','-');
-quiver(0,0,real(ESPRITEigenValue_E(2)),imag(ESPRITEigenValue_E(2)),0,'LineWidth',1,'Color',	'#D95319','LineStyle','-');
-
-quiver(0,0,real(Lambda_Lit_GESPRIT(1)),imag(Lambda_Lit_GESPRIT(1)),0,'LineWidth',1,'Color','#EDB120','LineStyle','--');
-quiver(0,0,real(Lambda_Lit_GESPRIT(2)),imag(Lambda_Lit_GESPRIT(2)),0,'LineWidth',1,'Color','#EDB120','LineStyle','--');
-
-quiver(0,0,real(GESPRITEigenValue_E(1)),imag(GESPRITEigenValue_E(1)),0,'LineWidth',1,'Color',	'#77AC30','LineStyle','-');
-quiver(0,0,real(GESPRITEigenValue_E(2)),imag(GESPRITEigenValue_E(2)),0,'LineWidth',1,'Color',	'#77AC30','LineStyle','-');
-
-% annotation('textarrow',[.3,.6],[.7,.4],'String','ABC');
-axis equal
-legend('$\overline{\lambda}_{1}$(Theory-ESPRIT)','$\overline{\lambda}_{2}$(Theory-ESPRIT)',...
-    '$\overline{\lambda}_{1}$(Empirical-ESPRIT)','$\overline{\lambda}_{2}$(Empirical-ESPRIT)',...
-    '$\overline{\lambda}_{1}$(Theory-GESPRIT)','$\overline{\lambda}_{2}$(Theory-GESPRIT)',...
-    '$\overline{\lambda}_{1}$(Empirical-GESPRIT)','$\overline{\lambda}_{2}$(Empirical-GESPRIT)',...
-    'interpreter','latex');
-
-
-
-% Lambda2_Lit_GESPRIT = (Alpha1 - sqrt(Delta))/2
-% GESPRIT2_MSE_E = mean(GESPRIT2_MSE_Res,1);
-% 
-% CRB_Res_E     = CRB_Res;
-% GESPRIT2_MSE_E = mean(GESPRIT2_MSE_Res,1);
 % figure;
 % hold on ;
 % % 
-% % xline(2,'LineWidth',1,'LineStyle','--');  % condition
-% plot(SNRList,log10(ESPRIT_MSE_E),'LineStyle','-','Color',	'#77AC30','Marker','x','LineWidth',1.5)
-% plot(SNRList,log10(GESPRIT_MSE_E),'LineStyle','-','Color','#77AC30','Marker','o','LineWidth',1.5)
-% plot(SNRList,log10(GESPRIT2_MSE_E),'LineStyle','-','Color','#77AC30','Marker','d','LineWidth',1.5)
-% % plot(SNRList,log10(MUSIC_MSE_E),'LineStyle','-','Color','#0072BD','Marker','x','LineWidth',1.5)
-% % plot(SNRList,log10(GMUSIC_MSE_E),'LineStyle','-','Color','#0072BD','Marker','o','LineWidth',1.5)
-% plot(SNRList,log10(CRB_Res_E),'LineStyle','--','Color','#4DBEEE','LineWidth',1.5)
-% % legend('threshold','ESPRIT','DESPRIT','MUSIC','GMUSIC','CRB');
-% % % legend('threshold','ESPRIT','GESPRIT','CRB')
+% % subplot(1,2,1)
+% hold on;
+% Angle_Lit_ESPRIT = angle(Lambda_Lit_ESPRIT);
+% Angle_Emp_ESPRIT = angle(ESPRITEigenValue_E);
+% quiver(0,0,real(Lambda_Lit_ESPRIT(1)),imag(Lambda_Lit_ESPRIT(1)),0,'LineWidth',1,'Color','#0072BD','LineStyle','--');
+% quiver(0,0,real(Lambda_Lit_ESPRIT(2)),imag(Lambda_Lit_ESPRIT(2)),0,'LineWidth',1,'Color','#0072BD','LineStyle','--');
+% xline(Angle_Lit_ESPRIT(1),'LineWidth',1,'Color',	'#D95319','LineStyle','-')
+% xline(Angle_Lit_ESPRIT(2),'LineWidth',1,'Color',	'#D95319','LineStyle','-')
+% 
+% quiver(0,0,real(ESPRITEigenValue_E(1)),imag(ESPRITEigenValue_E(1)),0,'LineWidth',1,'Color',	'#D95319','LineStyle','-');
+% quiver(0,0,real(ESPRITEigenValue_E(2)),imag(ESPRITEigenValue_E(2)),0,'LineWidth',1,'Color',	'#D95319','LineStyle','-');
+% xline(Angle_Emp_ESPRIT(1),'LineWidth',1,'Color','#0072BD','LineStyle','--')
+% xline(Angle_Emp_ESPRIT(2),'LineWidth',1,'Color','#0072BD','LineStyle','--')
+% title('Tradition ESPRIT')
+% axis([-0.2 2 0 2])
+% axis equal
+
+% subplot(1,2,2)
+% Angle_Lit_GESPRIT = angle(Lambda_Lit_GESPRIT);
+% Angle_Emp_GESPRIT = angle(GESPRITEigenValue_E);
+% quiver(0,0,real(Lambda_Lit_GESPRIT(1)),imag(Lambda_Lit_GESPRIT(1)),0,'LineWidth',1,'Color','#EDB120','LineStyle','--');
+% quiver(0,0,real(Lambda_Lit_GESPRIT(2)),imag(Lambda_Lit_GESPRIT(2)),0,'LineWidth',1,'Color','#EDB120','LineStyle','--');
+% xline(Angle_Lit_GESPRIT(1),'LineWidth',1,'Color',	'#D95319','LineStyle','-')
+% xline(Angle_Lit_GESPRIT(2),'LineWidth',1,'Color',	'#D95319','LineStyle','-')
+
+% quiver(0,0,real(GESPRITEigenValue_E(1)),imag(GESPRITEigenValue_E(1)),0,'LineWidth',1,'Color',	'#77AC30','LineStyle','-');
+% quiver(0,0,real(GESPRITEigenValue_E(2)),imag(GESPRITEigenValue_E(2)),0,'LineWidth',1,'Color',	'#77AC30','LineStyle','-');
+% xline(Angle_Emp_GESPRIT(1),'LineWidth',1,'Color','#0072BD','LineStyle','--')
+% xline(Angle_Emp_GESPRIT(2),'LineWidth',1,'Color','#0072BD','LineStyle','--')
+% annotation('textarrow',[.3,.6],[.7,.4],'String','ABC');
+% axis equal
+% title('Improved ESPRIT(GESPRIT)')
+% axis([-0.2 2 0 2])
+% legend('$\overline{\lambda}_{1}$(Theory-ESPRIT)','$\overline{\lambda}_{2}$(Theory-ESPRIT)',...
+%     '$\overline{\lambda}_{1}$(Empirical-ESPRIT)','$\overline{\lambda}_{2}$(Empirical-ESPRIT)',...
+%     '$\overline{\lambda}_{1}$(Theory-GESPRIT)','$\overline{\lambda}_{2}$(Theory-GESPRIT)',...
+%     '$\overline{\lambda}_{1}$(Empirical-GESPRIT)','$\overline{\lambda}_{2}$(Empirical-GESPRIT)',...
+%     'interpreter','latex');
+
+
+Angle_Lit_ESPRIT = angle(Lambda_Lit_ESPRIT);
+Angle_Emp_ESPRIT = angle(ESPRITEigenValue_E);
+Angle_Lit_GESPRIT = angle(Lambda_Lit_GESPRIT);
+Angle_Emp_GESPRIT = angle(GESPRITEigenValue_E);
+
+%% 绘图部分
+figure;
+hold on ;
+subplot(2,1,1)
+hold on;
+%thoery
+xline(Angle_Lit_ESPRIT(1),'LineWidth',1,'Color','#D95319','LineStyle','--')
+xline(Angle_Lit_ESPRIT(2),'LineWidth',1,'Color','#D95319','LineStyle','--')
+%Emperical
+xline(Angle_Emp_ESPRIT(1),'LineWidth',1,'Color','#0072BD','LineStyle','-.')
+xline(Angle_Emp_ESPRIT(2),'LineWidth',1,'Color','#0072BD','LineStyle','-.')
+%true
+xline(Angle_Lit_GESPRIT(1),'LineWidth',1.5,'Color','#A2142F','LineStyle','-')
+xline(Angle_Lit_GESPRIT(2),'LineWidth',2,'Color','#A2142F','LineStyle','-')
+legend('theory-1','theory-2','Emp-1','Emp-2','True-1','True-2')
+% annotation('doublearrow',Angle_Lit_GESPRIT,[0.5,0.5])
+title('Tradition ESPRIT')
+axis([-0.2 1.2 0 2])
+
+subplot(2,1,2)
+hold on;
+%thoery
+xline(Angle_Lit_GESPRIT(1),'LineWidth',1.5,'Color','#A2142F','LineStyle','-')
+xline(Angle_Lit_GESPRIT(2),'LineWidth',1.5,'Color','#A2142F','LineStyle','-')
+%Emperical
+xline(Angle_Emp_GESPRIT(1),'LineWidth',1,'Color','#0072BD','LineStyle','-.')
+xline(Angle_Emp_GESPRIT(2),'LineWidth',1,'Color','#0072BD','LineStyle','-.')
+axis([-0.2 1.2 0 2])
+legend('theory(True)-1','theory(True)-2','Emp-1','Emp-2')
+title('Improved ESPRIT(GESPRIT)')
+
+
+

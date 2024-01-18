@@ -7,9 +7,9 @@ N = 40 * coeff;
 T = 80 * coeff;
 theta_true = [0,5*2*pi/N];
 k = length(theta_true);
-P = [1 0.4; 0.4 1];
+P = [1 0; 0 1];
 
-SNRList = 0:15;
+SNRList = 2:15;s
 ScanArea = [-pi/2 pi/2];
 ScanPrec = 4000;
 
@@ -33,14 +33,15 @@ DoA_Nb = zeros(ReceivedNum1,nbLoop,k);
 MSE_Nb =  zeros(ReceivedNum1,nbLoop);
 EiValue_Nb= zeros(ReceivedNum1,nbLoop,k);
 
-% 跟自变量VariableList有关的变量 
+% 跟自变量SNRList有关的变量 
 ReceivedNum2 = ReceivedNum1;
 MSE_VList = zeros(ReceivedNum2,length(VariableList));
 Var_VList = zeros(ReceivedNum2,length(VariableList));
 Bias_VList = zeros(ReceivedNum2,length(VariableList));
 CRB_Res = zeros(1,length(VariableList));
 
-%%算法部分
+%%代码部分
+
 for object_i = 1:length(ArrayObject)
     ObjectNow = ArrayObject(object_i);
     for Loop_i = 1: nbLoop  
@@ -48,8 +49,6 @@ for object_i = 1:length(ArrayObject)
         ObjectNow.GenerateGuass();
         [DoA_Nb(1,Loop_i,:),MSE_Nb(1,Loop_i),EiValue_Nb(1,Loop_i,:)]  = ObjectNow.GetESPRIT();                
         [DoA_Nb(2,Loop_i,:),MSE_Nb(2,Loop_i),EiValue_Nb(2,Loop_i,:)]  = ObjectNow.GetGESPRIT('Empirical-2');   
-%         [DoA_Nb(3,Loop_i,:),MSE_Nb(3,Loop_i)]  = ObjectNow.GetMusic(ScanArea,ScanPrec);
-%         [DoA_Nb(4,Loop_i,:),MSE_Nb(4,Loop_i)]  = ObjectNow.GetGMusic(ScanArea,ScanPrec); 
         [DoA_Nb(3,Loop_i,:),MSE_Nb(3,Loop_i),...
          DoA_Nb(4,Loop_i,:),MSE_Nb(4,Loop_i)] = ObjectNow.GetMusicType(ScanArea,ScanPrec,'Empirical-2');
     end
@@ -60,8 +59,6 @@ for object_i = 1:length(ArrayObject)
     CRB_Res(1,object_i) = trace(ObjectNow.GetCRB())/ObjectNow.k;
 end
 
-
-%% 画图部分
 figure;
 hold on ;
 xline(ObjectNow.SepCondition,'LineWidth',1,'LineStyle','--' ,'Label', ...
@@ -75,12 +72,25 @@ plot(VariableList,log10(CRB_Res),'LineStyle','--','Color','#4DBEEE','LineWidth',
 legend(ShowLegend())
 
 
-% figure;
-% hold on;
-% plot(VariableList,log10(MSE_VList(3,:)),'LineStyle','-','Color','#0072BD','Marker','x','LineWidth',1.5)
-% plot(VariableList,log10(MSE_VList(4,:)),'LineStyle','-','Color','#0072BD','Marker','o','LineWidth',1.5)
-% 
-% figure;
-% hold on;
-% plot(VariableList,log10(MSE_VList(5,:)),'LineStyle','-','Color','#0072BD','Marker','x','LineWidth',1.5)
-% plot(VariableList,log10(MSE_VList(6,:)),'LineStyle','-','Color','#0072BD','Marker','o','LineWidth',1.5)
+
+% if(1)
+%     figure;
+%     subplot(1,2,1)
+%     hold on ;
+%     plot(VariableList,log10(MSE_VList(1,:)),'LineStyle','-','Color',	'#77AC30','Marker','x','LineWidth',1.5)
+%     plot(VariableList,log10(Var_VList(1,:)),'LineStyle','-','Color','#77AC30','Marker','o','LineWidth',1.5)
+%     plot(VariableList,log10(Bias_VList(1,:)),'LineStyle','-','Color','#77AC30','Marker','*','LineWidth',1.5)
+%     legend('MSE','Var','Bias')
+%     title('ESPRIT')
+%     xlabel(VariableLabel)
+% %     
+%     subplot(1,2,2)
+%     hold on ;
+%     plot(VariableList,log10(MSE_VList(2,:)),'LineStyle','-','Color','#77AC30','Marker','x','LineWidth',1.5)
+%     plot(VariableList,log10(Var_VList(2,:)),'LineStyle','-','Color','#77AC30','Marker','o','LineWidth',1.5)
+%     plot(VariableList,log10(Bias_VList(2,:)),'LineStyle','-','Color','#77AC30','Marker','*','LineWidth',1.5)
+%     legend('MSE','Var','Bias')
+%     title('GESPRIT')
+%     xlabel(VariableLabel)
+% end
+
