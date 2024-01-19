@@ -1,5 +1,5 @@
 close all; clear; clc
-
+%2132
 N = 40;
 T  = 80;
 c = N/T;
