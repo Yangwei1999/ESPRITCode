@@ -2,16 +2,16 @@
 clear ;
 clc;
 %% Initialization parameters
-coeff = 1;
+coeff =1;
 N = 40 * coeff;
 T = 80 * coeff;
-theta_true = [0,5*2*pi/N];
+theta_true = [0,0.4*2*pi/N];
 k = length(theta_true);
 P = [1.1 0; 0 1];
 
-SNRList = -4:2:10;
+SNRList = 0:2:34;
 ScanArea = [-pi/2 pi/2];
-ScanPrec = 2000;
+ScanPrec = 8000;
 
 % Variable
 VariableList = SNRList;
@@ -40,7 +40,7 @@ Var_VList = zeros(ReceivedNum2,length(VariableList));
 Bias_VList = zeros(ReceivedNum2,length(VariableList));
 CRB_Res = zeros(1,length(VariableList));
 
-%% Code 
+%%Code 
 
 for object_i = 1:length(ArrayObject)
     ObjectNow = ArrayObject(object_i);
@@ -50,7 +50,7 @@ for object_i = 1:length(ArrayObject)
         [DoA_Nb(1,Loop_i,:),MSE_Nb(1,Loop_i),EiValue_Nb(1,Loop_i,:)]  = ObjectNow.GetESPRIT();             
         [DoA_Nb(2,Loop_i,:),MSE_Nb(2,Loop_i),EiValue_Nb(2,Loop_i,:)]  = ObjectNow.GetGESPRIT('Empirical-2');   
         [DoA_Nb(3,Loop_i,:),MSE_Nb(3,Loop_i),...
-         DoA_Nb(4,Loop_i,:),MSE_Nb(4,Loop_i)] = ObjectNow.GetMusicType(ScanArea,ScanPrec,'Empirical-2');
+         DoA_Nb(4,Loop_i,:),MSE_Nb(4,Loop_i)] = ObjectNow.GetMusicType(ScanArea,ScanPrec,'Theory');
     end
 
     for kk = 1:ReceivedNum2
@@ -59,9 +59,8 @@ for object_i = 1:length(ArrayObject)
     CRB_Res(1,object_i) = trace(ObjectNow.GetCRB())/ObjectNow.k;
 end
 
-% save('1')
+save('3')
 
-%% drawing
 figure;
 hold on ;
 xline(ObjectNow.SepCondition,'LineWidth',1,'LineStyle','--' ,'Label', ...

@@ -1,7 +1,7 @@
 
 clear ;
 clc;
-%% 初始化参数
+%% Initialization parameters
 coeff =1;
 N = 40 * coeff;
 T = 80 * coeff;
@@ -13,34 +13,34 @@ SNRList = 0:2:14;
 ScanArea = [-pi/2 pi/2];
 ScanPrec = 6000;
 
-% 变量
+% Variable
 VariableList = SNRList;
 VariableLabel = 'SNR';
 
-% legend 
+% Legend 
 ShowLegend ={'Threshold','ESPRIT','GESPRIT','MUSIC','GMUSIC','CRB'};
 
-%% 实例化所有变量对象
+%% Instantiate all variable objects
 ArrayObject = [];
 for ii = 1:length(VariableList)
     ArrayObject = [ArrayObject ArraySignalModel(N,T,theta_true,P,VariableList(ii))];
 end
 
 nbLoop = 400;
-% 跟Loop 有关的变量  
+% Loop-related variables 
 ReceivedNum1 = 4;
 DoA_Nb = zeros(ReceivedNum1,nbLoop,k);
 MSE_Nb =  zeros(ReceivedNum1,nbLoop);
 EiValue_Nb= zeros(ReceivedNum1,nbLoop,k);
 
-% 跟自变量VariableList有关的变量 
+% VariableList-related variables
 ReceivedNum2 = ReceivedNum1;
 MSE_VList = zeros(ReceivedNum2,length(VariableList));
 Var_VList = zeros(ReceivedNum2,length(VariableList));
 Bias_VList = zeros(ReceivedNum2,length(VariableList));
 CRB_Res = zeros(1,length(VariableList));
 
-%%算法部分
+%% Code 
 for object_i = 1:length(ArrayObject)
     ObjectNow = ArrayObject(object_i);
     for Loop_i = 1: nbLoop  
@@ -60,8 +60,9 @@ for object_i = 1:length(ArrayObject)
     CRB_Res(1,object_i) = trace(ObjectNow.GetCRB())/ObjectNow.k;
 end
 
-save('2')
-% 画图部分
+% save('2')
+
+%% drawing
 figure;
 hold on ;
 xline(ObjectNow.SepCondition,'LineWidth',1,'LineStyle','--' ,'Label', ...
