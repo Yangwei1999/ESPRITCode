@@ -5,11 +5,12 @@ clc;
 coeff =2;
 N = 40 * coeff;
 T = 80 * coeff;
-theta_true = [0,5*2*pi/N];
+% theta_true = [0,5*2*pi/N];
+theta_true = [0,pi/4];
 k = length(theta_true);
 P = [2 0; 0 1];
 
-SNRList = -4:15;
+SNRList = -4:10;
 ScanArea = [-pi/2 pi/2];
 ScanPrec = 4000;
 
@@ -19,7 +20,7 @@ VariableLabel = 'SNR';
 
 % legend 
 ShowLegend ={'Threshold','ESPRIT','GESPRIT','MUSIC','GMUSIC','CRB'};
-
+% ShowLegend ={'Threshold','ESPRIT','GESPRIT','CRB'};
 %% 实例化所有变量对象
 ArrayObject = [];
 for ii = 1:length(VariableList)
@@ -49,8 +50,8 @@ for object_i = 1:length(ArrayObject)
         ObjectNow.GenerateGuass();
         [DoA_Nb(1,Loop_i,:),MSE_Nb(1,Loop_i),EiValue_Nb(1,Loop_i,:)]  = ObjectNow.GetESPRIT();             
         [DoA_Nb(2,Loop_i,:),MSE_Nb(2,Loop_i),EiValue_Nb(2,Loop_i,:)]  = ObjectNow.GetGESPRIT('Empirical-2');   
-%         [DoA_Nb(3,Loop_i,:),MSE_Nb(3,Loop_i),...
-%          DoA_Nb(4,Loop_i,:),MSE_Nb(4,Loop_i)] = ObjectNow.GetMusicType(ScanArea,ScanPrec,'Empirical-2');
+        [DoA_Nb(3,Loop_i,:),MSE_Nb(3,Loop_i),...
+         DoA_Nb(4,Loop_i,:),MSE_Nb(4,Loop_i)] = ObjectNow.GetMusicType(ScanArea,ScanPrec,'Empirical-2');
     end
 
     for kk = 1:ReceivedNum2
@@ -63,12 +64,12 @@ end
 figure;
 hold on ;
 xline(ObjectNow.SepCondition,'LineWidth',1,'LineStyle','--' ,'Label', ...
-    num2str(roundn(ObjectNow.SepCondition,-1)) ,'LabelVerticalAlignment','bottom',...
+    num2str(round(ObjectNow.SepCondition,-1)) ,'LabelVerticalAlignment','bottom',...
     'LabelOrientation','horizontal');  % condition
 plot(VariableList,log10(MSE_VList(1,:)),'LineStyle','-','Color','#77AC30','Marker','x','LineWidth',1.5)
 plot(VariableList,log10(MSE_VList(2,:)),'LineStyle','-','Color','#77AC30','Marker','o','LineWidth',1.5)
-% plot(VariableList,log10(MSE_VList(3,:)),'LineStyle','-','Color','#0072BD','Marker','x','LineWidth',1.5)
-% plot(VariableList,log10(MSE_VList(4,:)),'LineStyle','-','Color','#0072BD','Marker','o','LineWidth',1.5)
+plot(VariableList,log10(MSE_VList(3,:)),'LineStyle','-','Color','#0072BD','Marker','x','LineWidth',1.5)
+plot(VariableList,log10(MSE_VList(4,:)),'LineStyle','-','Color','#0072BD','Marker','o','LineWidth',1.5)
 plot(VariableList,log10(CRB_Res),'LineStyle','--','Color','#4DBEEE','LineWidth',1.5)
 legend(ShowLegend())
 

@@ -4,12 +4,13 @@ clc;
 %% 初始化参数
 coeff =5;
 N = 40 * coeff;
-T = 80 * coeff;
+T = 100 * coeff;
 theta_true = [0,5*2*pi/N];
+theta_true = [0,pi/4];
 k = length(theta_true);
 P = [1 0.4; 0.4 1];
 
-SNRList = 0:2:15;
+SNRList = 0:1:8;
 ScanArea = [-pi/2 pi/2];
 ScanPrec = 4000;
 
@@ -65,7 +66,7 @@ end
 figure;
 hold on ;
 xline(ObjectNow.SepCondition,'LineWidth',1,'LineStyle','--' ,'Label', ...
-    num2str(roundn(ObjectNow.SepCondition,-1)) ,'LabelVerticalAlignment','bottom',...
+    num2str(round(ObjectNow.SepCondition,-1)) ,'LabelVerticalAlignment','bottom',...
     'LabelOrientation','horizontal');  % condition
 plot(VariableList,log10(MSE_VList(1,:)),'LineStyle','-','Color','#77AC30','Marker','x','LineWidth',1.5)
 plot(VariableList,log10(MSE_VList(2,:)),'LineStyle','-','Color','#77AC30','Marker','o','LineWidth',1.5)

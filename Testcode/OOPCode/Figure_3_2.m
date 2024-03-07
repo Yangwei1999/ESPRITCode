@@ -6,10 +6,10 @@ coeff =[1 2 4 8 16];
 N = 40 * 5;
 T = 100 * 5;
 % theta_true = [0,5*2*pi/N];
-theta_true = [0,pi/3];
+theta_true = [0,pi/4];
 k = length(theta_true);
 P = [1 0.4; 0.4 1];
-SNR = 2;
+SNR = 3;
 
 ScanArea = [-pi/2 pi/2];
 ScanPrec = 4000;
@@ -27,7 +27,7 @@ for ii = 1:length(VariableList)
     ArrayObject = [ArrayObject ArraySignalModel(N*VariableList(ii),T*VariableList(ii),theta_true,P,SNR)];
 end
 
-nbLoop = 100;
+nbLoop = 5 0;
 % 跟Loop 有关的变量  
 ReceivedNum1 = 2;
 DoA_Nb = zeros(ReceivedNum1,nbLoop,k);
@@ -50,7 +50,7 @@ for object_i = 1:length(ArrayObject)
         disp([num2str(object_i) '--' num2str(Loop_i)])
         ObjectNow.GenerateGuass();
         [DoA_Nb(1,Loop_i,:),MSE_Nb(1,Loop_i),EiValue_Nb(1,Loop_i,:)]  = ObjectNow.GetESPRIT();                
-        [DoA_Nb(2,Loop_i,:),MSE_Nb(2,Loop_i),EiValue_Nb(2,Loop_i,:)]  = ObjectNow.GetGESPRIT('Theory');   
+        [DoA_Nb(2,Loop_i,:),MSE_Nb(2,Loop_i),EiValue_Nb(2,Loop_i,:)]  = ObjectNow.GetGESPRIT('Empirical-2');   
 %         [DoA_Nb(3,Loop_i,:),MSE_Nb(3,Loop_i)]                         = ObjectNow.GetMusic(ScanArea,ScanPrec);
 %         [DoA_Nb(4,Loop_i,:),MSE_Nb(4,Loop_i)]                         = ObjectNow.GetGMusic(ScanArea,ScanPrec); 
     end

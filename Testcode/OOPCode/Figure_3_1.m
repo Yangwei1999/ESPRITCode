@@ -5,10 +5,10 @@ coeff =10;
 N = 40 * coeff;
 T = 100 * coeff;
 % theta_true = [0,5*2*pi/N];
-theta_true = [0,pi/3];
+theta_true = [0,pi/4];
 k = length(theta_true);
 P = [1 0.4; 0.4 1];
-SNRList = 2 ;
+SNRList = 3 ;
 
 ScanArea = [-pi/2 pi/2];
 ScanPrec = 4000;
