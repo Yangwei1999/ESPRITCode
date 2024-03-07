@@ -29,13 +29,13 @@ end
 
 nbLoop = 100;
 % 跟Loop 有关的变量  
-ReceivedNum1 = 2;
+ReceivedNum1 = 4;
 DoA_Nb = zeros(ReceivedNum1,nbLoop,k);
 MSE_Nb =  zeros(ReceivedNum1,nbLoop);
 EiValue_Nb= zeros(ReceivedNum1,nbLoop,k);
 
 % 跟自变量SNRList有关的变量 
-ReceivedNum2 = 2;
+ReceivedNum2 = ReceivedNum1;
 MSE_VList = zeros(ReceivedNum2,length(VariableList));
 Var_VList = zeros(ReceivedNum2,length(VariableList));
 Bias_VList = zeros(ReceivedNum2,length(VariableList));
