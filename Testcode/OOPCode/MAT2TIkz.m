@@ -3,7 +3,15 @@
 [index1,index2] = size(MSE_VList);
 for ii =  1 : index1
     for jj = 1: index2
-        fprintf('(%d,%e)',(VariableList(jj)),MSE_VList(ii,jj))
+        fprintf('(%d,%e)',(N*VariableList(jj)),MSE_VList(ii,jj))
+    end
+    disp('\n');
+end
+
+[index1,index2] = size(Var_VList);
+for ii =  1 : index1
+    for jj = 1: index2
+        fprintf('(%d,%e)',(N*VariableList(jj)),Var_VList(ii,jj))
     end
     disp('\n');
 end

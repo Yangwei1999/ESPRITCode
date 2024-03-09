@@ -26,7 +26,7 @@ for ii = 1:length(VariableList)
     ArrayObject = [ArrayObject ArraySignalModel(N,T,theta_true,P,VariableList(ii))];
 end
 
-nbLoop =200;
+nbLoop =100;
 % 跟Loop 有关的变量  
 ReceivedNum1 = 2;
 DoA_Nb = zeros(ReceivedNum1,nbLoop,k);

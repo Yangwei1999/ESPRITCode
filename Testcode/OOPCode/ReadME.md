@@ -1,3 +1,16 @@
+# 2024-3-8 talk
+* Question *
+1. 对于介于阈值之间的点，一个特征值大于$\sqrt{c}$, 一个小于时，是修正一个，还是都不修复（ESPRIT），还是都行，仅仅考虑相变点之后的结果
+2. 对于此时的widely spaced doa 不应该按照[0 5*2pi/N ] 0 0.4*2pi/N ]取值，  我们只能取[0 pi/3] [0, pi/4]常数阶
+3. Vallet 论文中的结论比较强 N(\hat \theta - \theta) \to 0,  我们的是 (\hat \theta - \theta) \to 0, 好像还不太一样
+
+
+- [ ] N(\hat \theta - \theta) \to 0 在信号相关情况下，对于GESPRIT也成立, 根据仿真结果猜测
+
+
+
+
+
 
 # 2023-12-19
 
