@@ -1,10 +1,11 @@
-
 clear ;
-clc;
+clc   ;
+
 % 初始settings
 coeff =[1 2 4 8 16];
 N = 40 * 5;
 T = 100 * 5;
+
 % theta_true = [0,5*2*pi/N];
 theta_true = [0,pi/4];
 k = length(theta_true);
@@ -14,14 +15,14 @@ SNR = 3;
 ScanArea = [-pi/2 pi/2];
 ScanPrec = 4000;
 
-% 变量
+% Variable
 VariableList = coeff;
 VariableLabel = 'N';
 
 % legend 
 ShowLegend ={'Threshold','ESPRIT','GESPRIT','MUSIC','GMUSIC','CRB'};
 
-%% 实例化所有变量对象
+% 实例化所有变量对象
 ArrayObject = [];
 for ii = 1:length(VariableList)
     ArrayObject = [ArrayObject ArraySignalModel(N*VariableList(ii),T*VariableList(ii),theta_true,P,SNR)];
@@ -42,8 +43,7 @@ Bias_VList = zeros(ReceivedNum2,length(VariableList));
 EiValue_VList = zeros(2,length(VariableList),k);  % Only ESPRIT-Type methods
 CRB_Res = zeros(1,length(VariableList));
 
-%%代码部分
-
+% code part
 for object_i = 1:length(ArrayObject)
     ObjectNow = ArrayObject(object_i);
     for Loop_i = 1: nbLoop  
@@ -65,7 +65,6 @@ end
 
 ObjectNow = ArrayObject(1);
 
-
 figure;
 subplot(1,2,1)
 hold on ;
@@ -82,10 +81,12 @@ hold on ;
 plot(VariableList*N,log10(MSE_VList(2,:)),'LineStyle','-','Color','#77AC30','Marker','x','LineWidth',1.5)
 plot(VariableList*N,log10(Var_VList(2,:)),'LineStyle','-','Color','#77AC30','Marker','o','LineWidth',1.5)
 plot(VariableList*N,log10(Bias_VList(2,:)),'LineStyle','-','Color','#77AC30','Marker','*','LineWidth',1.5)
-legend('MSE','Var','Bias')
+plot(VariableList*N,log10(CRB_Res(1,:)),'LineStyle','--','Color','#77AC30','Marker','o','LineWidth',1.5)
+
+legend('MSE','Var','Bias','CRB')
 title('GESPRIT')
 xlabel(VariableLabel)
-axis([min(VariableList*N) max(VariableList*N) -7 0])
+% axis([min(VariableList*N) max(VariableList*N) -7 0])
 
 
 

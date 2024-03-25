@@ -8,6 +8,7 @@ T = 100 * coeff;
 theta_true = [0,pi/4];
 k = length(theta_true);
 P = [1 0.4; 0.4 1];
+% P =[1.9953,0.7981;0.7981,1.9953];
 SNRList = 3 ;
 
 ScanArea = [-pi/2 pi/2];
@@ -26,6 +27,9 @@ for ii = 1:length(VariableList)
     ArrayObject = [ArrayObject ArraySignalModel(N,T,theta_true,P,VariableList(ii))];
 end
 
+% ArrayObject(1).sigma2 = 1;
+% ArrayObject.P =    [1.9953,0.7981;0.7981,1.9953] ;
+% ArrayObject.GenerateGuass();
 nbLoop =100;
 % 跟Loop 有关的变量  
 ReceivedNum1 = 2;
@@ -63,12 +67,12 @@ for object_i = 1:length(ArrayObject)
 end
 
 ObjectNow = ArrayObject(1);
-
+P./ObjectNow.sigma2
 %% 实验部分
 % 实验DOA
 % MSE
-[MSE_VList(1,1),Var_VList(1,1),Bias_VList(1,1)]
-[MSE_VList(2,1),Var_VList(2,1),Bias_VList(2,1)]
+[MSE_VList(1,1),Var_VList(1,1),Bias_VList(1,1)];
+[MSE_VList(2,1),Var_VList(2,1),Bias_VList(2,1)];
 % 实验特征值
 ESPRITEigenValue_E = squeeze(EiValue_VList(1,:,:)).';
 GESPRITEigenValue_E = squeeze(EiValue_VList(2,:,:)).';
@@ -89,12 +93,12 @@ J2 = J_tmp(2:end,:);
 u1 = U_APA(:,1);
 u2 = U_APA(:,2);
 Alpha1 = g(1)  *  u1'*J1'*J2*u1 + g(2) * u2'*J1'*J2*u2;
-Alpha2 = g(1)  *  g(2) *(n/N).^2 * exp(1i * theta_true(1)) * exp(1i * theta_true(2))
-Alpha2 = g(1)  *  g(2) *(u1'*J1'*J2*u1 *u2'*J1'*J2*u2 - u1'*J1'*J2*u2 *u2'*J1'*J2*u1)
+Alpha2 = g(1)  *  g(2) *(n/N).^2 * exp(1i * theta_true(1)) * exp(1i * theta_true(2));
+Alpha2 = g(1)  *  g(2) *(u1'*J1'*J2*u1 *u2'*J1'*J2*u2 - u1'*J1'*J2*u2 *u2'*J1'*J2*u1);
 Delta = Alpha1^2 - 4 * Alpha2;
-Lambda_Lit_ESPRIT = [(Alpha1 + sqrt(Delta))/2*(N/n)     (Alpha1 - sqrt(Delta))/2*(N/n)]
+Lambda_Lit_ESPRIT = [(Alpha1 + sqrt(Delta))/2*(N/n)     (Alpha1 - sqrt(Delta))/2*(N/n)];
 % GESPRIT算法理论特征值
-Lambda_Lit_GESPRIT = (exp(1i*ObjectNow.ThetaTrue))
+Lambda_Lit_GESPRIT = (exp(1i*ObjectNow.ThetaTrue));
 
 
 Angle_Lit_ESPRIT = angle(Lambda_Lit_ESPRIT);
