@@ -17,7 +17,7 @@ ScanPrec = 4000;
 % 变量
 VariableList = SNRList;
 VariableLabel = 'SNR';
-
+% 修复bug a - 1. ;131 323212312312331231232112312312
 % legend 
 ShowLegend ={'Threshold','ESPRIT','GESPRIT','MUSIC','GMUSIC','CRB'};
 
